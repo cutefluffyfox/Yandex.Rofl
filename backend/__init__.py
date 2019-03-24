@@ -1,7 +1,7 @@
-from library.flask import Flask, render_template
+from library.flask import Flask, render_template, url_for
 
 
-app = Flask(__name__, template_folder='../frontend')
+app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
 
 
 @app.route('/')
@@ -12,5 +12,3 @@ def index():
 
 if __name__ == '__main__':
     app.run(port=8000, host='127.0.0.1')
-
-# code from back.py moved to __init__.py, deleted back.py and added lib flask
