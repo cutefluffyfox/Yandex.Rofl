@@ -6,7 +6,7 @@ class Find extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      findString: ''
+      findString: '',
     }
     this.printFindString = this.printFindString.bind(this);
     this.sendSubmit = this.sendSubmit.bind(this);
@@ -45,6 +45,7 @@ class Find extends React.Component{
         response.json()
         .then(function(data) {
           console.log(data);
+          this.props.getResult(data);
         });
       }
     )

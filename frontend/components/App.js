@@ -2,16 +2,25 @@ import React from "react";
 import {Container, Row, Col, Button, InputGroup, FormControl, Nav} from "react-bootstrap";
 import Navigation from "./Navigation";
 import Find from "./Find";
+import Result from "./Results";
 
 class App extends React.Component{
 
   constructor(props){
     super(props);
-    // this.state = {
-    //   c: 0,
-    // };
+    this.state = {
+      answer: {},
+    }
     this.print = this.print.bind(this);
+    this.getResult = this.getResult.bind(this);
   };
+
+  getResult(parametr){
+    this.setState({
+      answer: parametr
+    })
+  }
+
 
   print(){
     console.log("All work")
@@ -28,7 +37,8 @@ class App extends React.Component{
         </Row>
         <Row>
           <Col>
-            <Find />
+            <Find getResult={this.getResult}/>
+            <Result data={this.state.answer}/>
           </Col>
         </Row>
       </Container>
