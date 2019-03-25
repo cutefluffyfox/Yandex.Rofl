@@ -1,7 +1,7 @@
 import React from "react";
 import {Container, Row, Col, Button, InputGroup, FormControl, Nav} from "react-bootstrap";
 import Navigation from "./Navigation";
-import Find from "./Find.js";
+import Find from "./Find";
 
 class App extends React.Component{
 
