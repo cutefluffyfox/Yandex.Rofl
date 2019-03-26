@@ -10,6 +10,28 @@ class App extends React.Component{
     super(props);
     this.state = {
       answer: "",
+      problems: [
+        {
+          problem: 'Это образец проблемы №1',
+          answer: 'Ответ на проблему №1'
+        },
+        {
+          problem: 'Это образец проблемы №2',
+          answer: 'Ответ на проблему №2'
+        },
+        {
+          problem: 'Это образец проблемы №3',
+          answer: 'Ответ на проблему №3'
+        },
+        {
+          problem: 'Это образец проблемы №4',
+          answer: 'Ответ на проблему №4'
+        },
+        {
+          problem: 'Это образец проблемы №5',
+          answer: 'Ответ на проблему №5'
+        },
+      ],
     }
     this.print = this.print.bind(this);
     this.getResult = this.getResult.bind(this);
@@ -17,7 +39,7 @@ class App extends React.Component{
 
   getResult(parametr){
     this.setState({
-      answer: parametr
+      answer: parametr,
     })
   }
 
@@ -30,7 +52,7 @@ class App extends React.Component{
     console.log("All work")
     return(
       <Container style={{ height: '100%' }}>
-        <Row style={{height:'40%'}}>
+        <Row style={{height: (this.state.problems.length) ? '10%' : '40%'}}>
           <Col>
             <Navigation />
           </Col>
@@ -38,7 +60,7 @@ class App extends React.Component{
         <Row>
           <Col>
             <Find getResult={this.getResult}/>
-            <Results data={this.state.answer}/>
+            <Results data={this.state.problems} />
           </Col>
         </Row>
       </Container>

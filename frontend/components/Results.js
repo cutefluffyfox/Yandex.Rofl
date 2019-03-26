@@ -1,5 +1,7 @@
 import React from "react";
-import {Container, Row, Col, Button, InputGroup, FormControl, Nav} from "react-bootstrap";
+import {Card} from "react-bootstrap";
+import SearchItem from "./SearchItem";
+
 
 
 class Results extends React.Component{
@@ -11,8 +13,15 @@ class Results extends React.Component{
   }
 
   render(){
+    let renderProblems = this.state.answer.map(v =>
+      <SearchItem problem={v.problem} answer={v.answer} />
+    );
+
     return(
-      <h3>{this.state.data}</h3>
+      <div>
+        <Card.Header> Ответы: </Card.Header>
+        {renderProblems}
+      </div>
     )
   }
 

@@ -1,11 +1,12 @@
 import React from "react";
-import {Button, InputGroup, FormControl} from "react-bootstrap";
+import {Button, InputGroup, FormControl, Spinner} from "react-bootstrap";
 
 class Find extends React.Component{
   constructor(props){
     super(props);
     this.state = {
       findString: '',
+      isLoading: false,
     }
     this.printFindString = this.printFindString.bind(this);
     this.sendSubmit = this.sendSubmit.bind(this);
@@ -18,9 +19,14 @@ class Find extends React.Component{
   sendSubmit(){
     var letter = this.state.findString;
     if(letter == ''){
-      alert("Пустая строка");
+      return;
     }
     else{
+
+      this.setState({
+        isLoading: true,
+      });
+
       fetch('/Find',
       {
         method: 'post',
@@ -35,6 +41,9 @@ class Find extends React.Component{
       })
       .then(
       function(response) {
+        this.setState({
+          isLoading: false,
+        });
         if (response.status !== 200) {
           console.log('Looks like there was a problem. Status Code: ' +
             response.status);
@@ -49,6 +58,9 @@ class Find extends React.Component{
       }
     )
     .catch(function(err) {
+      this.setState({
+        isLoading: false,
+      });
       console.log('Fetch Error :-S', err);
     });
   }
@@ -59,6 +71,16 @@ class Find extends React.Component{
 
 
   render(){
+
+    let loading = (this.state.isLoading) ?
+    <Spinner
+      as="span"
+      animation="grow"
+      size="sm"
+      role="status"
+      aria-hidden="true"
+    /> : null;
+
     return(
       <InputGroup className="mb-3">
         <FormControl
@@ -71,7 +93,7 @@ class Find extends React.Component{
           <InputGroup.Append>
             <Button variant="outline-success"
               onClick={this.sendSubmit}>
-                  Поиск
+                  {loading} Поиск
             </Button>
           </InputGroup.Append>
           </InputGroup>
