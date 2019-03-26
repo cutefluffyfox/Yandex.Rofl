@@ -12,14 +12,17 @@ class Results extends React.Component{
     };
   }
 
+
+
   render(){
     let renderProblems = this.state.answer.map(v =>
       <SearchItem problem={v.problem} answer={v.answer} />
     );
+    let header = (this.props.data.length) ? <Card.Header> Ответы: </Card.Header>: null;
 
     return(
       <div>
-        <Card.Header> Ответы: </Card.Header>
+        {header}
         {renderProblems}
       </div>
     )

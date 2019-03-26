@@ -3,12 +3,14 @@ import {Container, Row, Col} from "react-bootstrap";
 import Navigation from "./Navigation";
 import Find from "./Find";
 import Results from "./Results";
+import AddAnswer from "./AddAnswer";
 
 class App extends React.Component{
 
   constructor(props){
     super(props);
     this.state = {
+      switch: 0,
       answer: "",
       problems: [
         {
@@ -20,8 +22,8 @@ class App extends React.Component{
           answer: 'Ответ на проблему №2'
         },
         {
-          problem: 'Это образец проблемы №3',
-          answer: 'Ответ на проблему №3'
+          problem: 'Ы',
+          answer: 'КУ'
         },
         {
           problem: 'Это образец проблемы №4',
@@ -35,7 +37,9 @@ class App extends React.Component{
     }
     this.print = this.print.bind(this);
     this.getResult = this.getResult.bind(this);
+    this.changeRender = this.changeRender.bind(this);
   };
+
 
   getResult(parametr){
     this.setState({
@@ -44,24 +48,45 @@ class App extends React.Component{
   }
 
 
+  changeRender(num){
+    this.setState({
+      switch: num,
+    }, console.log(num));
+  }
+
   print(){
     console.log("All work")
   };
 
   render(){
-    console.log("All work")
+    let mainBlock = null;
+
+    switch (this.state.switch) {
+      case 0:
+        mainBlock =
+          <Col>
+            <Find getResult={this.getResult}/>
+            <Results data={(this.state.problems.length) ? this.state.problems: [] } />
+          </Col>;
+        break;
+      case 1:
+        mainBlock =
+          <Col>
+            <AddAnswer/>
+          </Col>
+        break;
+      default:
+        mainBlock = null;
+    }
     return(
       <Container style={{ height: '100%' }}>
         <Row style={{height: (this.state.problems.length) ? '10%' : '40%'}}>
           <Col>
-            <Navigation />
+            <Navigation switchNavigation={this.changeRender}/>
           </Col>
         </Row>
         <Row>
-          <Col>
-            <Find getResult={this.getResult}/>
-            <Results data={this.state.problems} />
-          </Col>
+          {mainBlock}
         </Row>
       </Container>
     );
