@@ -1,15 +1,15 @@
 import React from "react";
-import {Container, Row, Col, Button, InputGroup, FormControl, Nav} from "react-bootstrap";
+import {Container, Row, Col} from "react-bootstrap";
 import Navigation from "./Navigation";
 import Find from "./Find";
-import Result from "./Results";
+import Results from "./Results";
 
 class App extends React.Component{
 
   constructor(props){
     super(props);
     this.state = {
-      answer: {},
+      answer: "",
     }
     this.print = this.print.bind(this);
     this.getResult = this.getResult.bind(this);
@@ -38,7 +38,7 @@ class App extends React.Component{
         <Row>
           <Col>
             <Find getResult={this.getResult}/>
-            <Result data={this.state.answer}/>
+            <Results data={this.state.answer}/>
           </Col>
         </Row>
       </Container>

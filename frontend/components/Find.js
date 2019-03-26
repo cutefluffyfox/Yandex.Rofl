@@ -1,6 +1,5 @@
 import React from "react";
-import {Container, Row, Col, Button, InputGroup, FormControl, Nav} from "react-bootstrap";
-import Navigation from "./Navigation";
+import {Button, InputGroup, FormControl} from "react-bootstrap";
 
 class Find extends React.Component{
   constructor(props){
@@ -24,15 +23,15 @@ class Find extends React.Component{
     else{
       fetch('/Find',
       {
-       method: 'post',
-       headers: {
-         'Content-Type':'application/json',
-         "Access-Control-Allow-Origin": "*",
-         "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
-       },
-       body: {
-        "searchValue": letter
-       }
+        method: 'post',
+        headers: {
+          'Content-Type':'application/json',
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+        },
+        body: JSON.stringify({
+         "searchValue": letter
+        }),
       })
       .then(
       function(response) {
