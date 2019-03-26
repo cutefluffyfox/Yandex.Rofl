@@ -87,7 +87,7 @@ class ProblemsTable:
                               SET callbackmemo = ?,
                                   reply = ?,
                                   description = ? 
-                              WHERE problem_id = ?''', (callbackememo, reply, description,  problem_id))
+                              WHERE problem_id = ?''', (callbackememo, reply, description, problem_id))
 
         cursor.close()
         self.connection.commit()
@@ -131,3 +131,17 @@ def add_data_from_excel(path):
         if all(map(lambda x: type(x) != float, [case_num, reply, description])):
             problem_table.insert(case_num, callback, reply, description)
             print(_)
+
+
+def get_results(problems_id: list):
+    db = DB()
+    problem_table = ProblemsTable(db.get_connection())
+    res = {}
+
+    for problem_id in problems_id:
+        data = problem_table.get(problem_id)
+        res[problem_id] = {'CALLBACKMEMO': data[2],
+                           'answer': data[3],
+                           'description': data[4]}
+
+    return str(res)
