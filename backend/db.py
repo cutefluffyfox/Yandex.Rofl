@@ -65,18 +65,30 @@ class ProblemsTable:
         cursor.execute('''CREATE TABLE IF NOT EXISTS problems 
                             (id INTEGER PRIMARY KEY AUTOINCREMENT,
                              problem_id VARCHAR(30),
-                             callbackmemo VARCHAR(1000),
-                             reply VARCHAR(10000),
-                             description VARCHAR(10000)
+                             callbackmemo TEXT,
+                             reply TEXT,
+                             description TEXT
                              )''')
         cursor.close()
         self.connection.commit()
 
     def insert(self, problem_id, callbackememo, reply, description):
         cursor = self.connection.cursor()
-        cursor.execute('''INSERT INTO problems 
-                          (problem_id, callbackmemo, reply, description) 
-                          VALUES (?,?,?,?)''', (problem_id, callbackememo, reply, description))
+        cursor.execute("SELECT * FROM problems WHERE problem_id = ?", (problem_id,))
+        row = cursor.fetchone()
+
+        if row is None:
+            cursor.execute('''INSERT INTO problems 
+                            (problem_id, callbackmemo, reply, description) 
+                            VALUES (?,?,?,?)''', (problem_id, callbackememo, reply, description))
+
+        else:
+            cursor.execute('''UPDATE problems
+                              SET callbackmemo = ?,
+                                  reply = ?,
+                                  description = ? 
+                              WHERE problem_id = ?''', (callbackememo, reply, description,  problem_id))
+
         cursor.close()
         self.connection.commit()
 
@@ -116,7 +128,6 @@ def add_data_from_excel(path):
         reply = replies.pop(0)
         description = descriptions.pop(0)
 
-        if all([case_num, callback, reply, description]):
+        if all(map(lambda x: type(x) != float, [case_num, reply, description])):
             problem_table.insert(case_num, callback, reply, description)
             print(_)
-
