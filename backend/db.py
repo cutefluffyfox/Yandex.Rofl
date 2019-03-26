@@ -1,9 +1,10 @@
 import sqlite3
+from pandas import read_excel
 
 
 class DB:
     def __init__(self):
-        conn = sqlite3.connect('news.db', check_same_thread=False)
+        conn = sqlite3.connect('crock.db', check_same_thread=False)
         self.conn = conn
 
     def get_connection(self):
@@ -96,3 +97,26 @@ class ProblemsTable:
         cursor.execute('''DELETE FROM problems WHERE problem_id = ?''', (problem_id,))
         cursor.close()
         self.connection.commit()
+
+
+def add_data_from_excel(path):
+    db = DB()
+    problem_table = ProblemsTable(db.get_connection())
+    problem_table.init_table()
+
+    excel = read_excel(path)
+    case_nums = list(excel['Номер кейса'])
+    callbacks = list(excel['CALLBACKMEMO'])
+    replies = list(excel['Решение'])
+    descriptions = list(excel['Подробное описание'])
+
+    for _ in range(len(excel)):
+        case_num = case_nums.pop(0)
+        callback = callbacks.pop(0)
+        reply = replies.pop(0)
+        description = descriptions.pop(0)
+
+        if all([case_num, callback, reply, description]):
+            problem_table.insert(case_num, callback, reply, description)
+            print(_)
+
