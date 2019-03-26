@@ -136,12 +136,13 @@ def add_data_from_excel(path):
 def get_results(problems_id: list):
     db = DB()
     problem_table = ProblemsTable(db.get_connection())
-    res = {}
+    res = []
 
     for problem_id in problems_id:
         data = problem_table.get(problem_id)
-        res[problem_id] = {'CALLBACKMEMO': data[2],
-                           'answer': data[3],
-                           'description': data[4]}
+        res.append({'CALLBACKMEMO': data[2],
+                    'reply': data[3],
+                    'description': data[4],
+                    'problem_id': problems_id})
 
     return str(res)
