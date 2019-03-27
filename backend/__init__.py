@@ -23,5 +23,21 @@ def find():
     return 'not post'
 
 
+@app.route('/Record', methods=['POST'])
+def record():
+    if request.method == 'POST':
+        data = eval(request.data.decode('utf-8'))
+        database = DB()
+        problem_table = ProblemsTable(database.get_connection())
+
+        if problem_table.get(data['id']):
+            problem_table.insert(data['id'],
+                                 data['callbacks'],
+                                 data['reply'],
+                                 data['description'])
+            return 'success'
+        return 'ID Error'
+
+
 if __name__ == '__main__':
     app.run(port=8000, host='127.0.0.1')
