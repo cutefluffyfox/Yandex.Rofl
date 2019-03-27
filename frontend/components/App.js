@@ -1,5 +1,5 @@
 import React from "react";
-import {Container, Row, Col} from "react-bootstrap";
+import {Container, Row, Col, Image} from "react-bootstrap";
 import Navigation from "./Navigation";
 import Find from "./Find";
 import Results from "./Results";
@@ -12,28 +12,6 @@ class App extends React.Component{
     this.state = {
       switch: 0,
       answer: "",
-      problems: [
-        {
-          problem: 'Это образец проблемы №1',
-          answer: 'Ответ на проблему №1'
-        },
-        {
-          problem: 'Это образец проблемы №2',
-          answer: 'Ответ на проблему №2'
-        },
-        {
-          problem: 'Ы',
-          answer: 'КУ'
-        },
-        {
-          problem: 'Это образец проблемы №4',
-          answer: 'Ответ на проблему №4'
-        },
-        {
-          problem: 'Это образец проблемы №5',
-          answer: 'Ответ на проблему №5'
-        },
-      ],
     }
     this.print = this.print.bind(this);
     this.getResult = this.getResult.bind(this);
@@ -64,30 +42,41 @@ class App extends React.Component{
     switch (this.state.switch) {
       case 0:
         mainBlock =
-          <Col>
+        <Row style={{
+                marginTop: (this.state.answer.length) ? "0%" : "11%",
+              }}>
+          <Col md={{ span: 4, offset: 4 }}>
+            <Image src="./image/Croc_logo_eng_RGB.png" rounded
+                   style={{width: "100%"}}/>
+          </Col>
+          <Col md={12}
+               style={{
+                 paddingTop: "20px",
+               }}>
             <Find getResult={this.getResult}/>
-            <Results data={(this.state.problems.length) ? this.state.problems: [] } />
-          </Col>;
+            <Results data={(this.state.answer.length) ? this.state.answer: [] } />
+          </Col>
+        </Row>;
         break;
       case 1:
         mainBlock =
+        <Row style={{paddingTop: "20%"}}>
           <Col>
             <AddAnswer/>
           </Col>
+        </Row>
         break;
       default:
         mainBlock = null;
     }
     return(
-      <Container style={{ height: '100%' }}>
-        <Row style={{height: (this.state.problems.length) ? '10%' : '40%'}}>
+      <Container style={{ height: '100%', width: "100%" }}>
+        <Row>
           <Col>
             <Navigation switchNavigation={this.changeRender}/>
           </Col>
         </Row>
-        <Row>
           {mainBlock}
-        </Row>
       </Container>
     );
   }

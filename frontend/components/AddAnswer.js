@@ -9,13 +9,17 @@ class AddAnswer extends React.Component{
 
   render(){
     return(
-    <InputGroup className="mb-3">
+    <InputGroup className="mb-3" style={{
+          width: "50%",
+          paddingLeft: "10%"
+    }}>
       <InputGroup.Prepend>
-        <InputGroup.Text id="inputGroup-sizing-default">Default</InputGroup.Text>
+        <InputGroup.Text id="inputGroup-sizing-default">ID</InputGroup.Text>
       </InputGroup.Prepend>
       <FormControl
         aria-label="Default"
-        aria-describedby="inputGroup-sizing-default"
+        placeholder="Номер id"
+        aria-describedby="inputGroup-sizing"
         />
     </InputGroup>
   );
