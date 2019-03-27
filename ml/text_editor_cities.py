@@ -1,11 +1,9 @@
 from pandas import read_csv
 from nltk import word_tokenize
-from os import path
-from nltk.corpus import stopwords
 
-df = read_csv(path.join('D:\трэш дата', "final_text.csv"))
+df = read_csv("final_text.csv")
 
-a = read_csv(r'D:\трэш дата\языки\city.csv')
+a = read_csv(r'\city.csv')
 a1 = list(a['country_en'].apply(str))
 a1.extend(list(a['region_en'].apply(str)))
 a1.extend(list(a['city_en'].apply(str)))

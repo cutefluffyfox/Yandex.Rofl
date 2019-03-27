@@ -36,4 +36,4 @@ def tokenize_me(file_text):
 check = df['Подробное описание'].apply(tokenize_me)
 
 df['clear_text'] = check
-df.to_csv("F:\трэш дата\clear_text1.csv", encoding='utf-8')
+df.to_csv("clear_text1.csv", encoding='utf-8')
