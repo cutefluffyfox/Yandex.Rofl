@@ -13,7 +13,7 @@ def index():
 @app.route('/Find', methods=['POST'])
 def find():
     if request.method == 'POST':
-        data = eval(request.data.decode('utf-8'))
+        data = eval(request.data.decode('utf-8'))['searchValue']
         # return get_result(Here ML is changing the data)
         return get_results(['SD1213575',
                             'SD1213532',

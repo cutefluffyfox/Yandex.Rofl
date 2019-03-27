@@ -108,6 +108,52 @@ class ProblemsTable:
         self.connection.commit()
 
 
+class CleanTable:
+    def __init__(self, connection):
+        self.connection = connection
+
+    def init_table(self):
+        cursor = self.connection.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS clear 
+                            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                             problem_id VARCHAR(30),
+                             description TEXT
+                             )''')
+        cursor.close()
+        self.connection.commit()
+
+    def insert(self, problem_id, description):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM problems WHERE problem_id = ?", (problem_id,))
+        row = cursor.fetchone()
+
+        if row is not None:
+            cursor.execute('''INSERT INTO clear 
+                            (problem_id, description) 
+                            VALUES (?,?)''', (problem_id, description))
+
+        cursor.close()
+        self.connection.commit()
+
+    def get(self, problem_id):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM problems WHERE problem_id = ?", (problem_id,))
+        row = cursor.fetchone()
+        return row
+
+    def get_all(self):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM problems")
+        rows = cursor.fetchall()
+        return rows
+
+    def delete(self, problem_id):
+        cursor = self.connection.cursor()
+        cursor.execute('''DELETE FROM problems WHERE problem_id = ?''', (problem_id,))
+        cursor.close()
+        self.connection.commit()
+
+
 def add_data_from_excel(path):
     from pandas import read_excel
     db = DB()
