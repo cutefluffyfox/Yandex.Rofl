@@ -1,5 +1,5 @@
 from library.flask import Flask, render_template, request
-from json import dumps
+from backend.db import *
 
 app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
 
@@ -14,10 +14,12 @@ def index():
 def find():
     if request.method == 'POST':
         data = eval(request.data.decode('utf-8'))
-
-        # Here ML is changing the data
-
-        return dumps(data)
+        # return get_result(Here ML is changing the data)
+        return get_results(['SD1213575',
+                            'SD1213532',
+                            'SD1213531',
+                            'SD1210912',
+                            'SD1210678'])
     return 'not post'
 
 

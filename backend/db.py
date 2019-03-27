@@ -1,10 +1,7 @@
-import sqlite3
-from pandas import read_excel
-
-
 class DB:
     def __init__(self):
-        conn = sqlite3.connect('crock.db', check_same_thread=False)
+        from sqlite3 import connect
+        conn = connect('crock.db', check_same_thread=False)
         self.conn = conn
 
     def get_connection(self):
@@ -112,6 +109,7 @@ class ProblemsTable:
 
 
 def add_data_from_excel(path):
+    from pandas import read_excel
     db = DB()
     problem_table = ProblemsTable(db.get_connection())
     problem_table.init_table()
@@ -134,6 +132,7 @@ def add_data_from_excel(path):
 
 
 def get_results(problems_id: list):
+    from json import dumps
     db = DB()
     problem_table = ProblemsTable(db.get_connection())
     res = []
@@ -145,4 +144,4 @@ def get_results(problems_id: list):
                     'description': data[4],
                     'problem_id': problems_id})
 
-    return str(res)
+    return dumps(res)
