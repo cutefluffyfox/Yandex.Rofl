@@ -1,0 +1,77 @@
+from pandas import read_csv
+from pymorphy2 import MorphAnalyzer
+import string
+from nltk import word_tokenize
+from nltk.corpus import stopwords
+
+city_csv = read_csv('city.csv')
+cities = list(city_csv['country_en'].apply(str))
+cities.extend(list(city_csv['region_en'].apply(str)))
+cities.extend(list(city_csv['city_en'].apply(str)))
+cities.extend(list(city_csv['country'].apply(str)))
+cities.extend(list(city_csv['region'].apply(str)))
+cities.extend(list(city_csv['city'].apply(str)))
+cities.extend(['ул'])
+cities = list(set(map(str.lower, cities)))
+
+names = list(read_csv('surnames.csv')['Surname'].apply(str))
+names.extend(list(read_csv('rus_names.csv')['Name'].apply(str)))
+names.extend(list(read_csv('for_names.csv')['name'].apply(str)))
+names = list(map(str.lower, names))
+
+
+def tokenize_me(file_text):
+    def delete_bad_words(data: list):
+        i = 0
+        morph = MorphAnalyzer()
+        stop_words = stopwords.words('russian')
+        stop_words.extend(['что', 'это', 'так', 'вот', 'быть', 'как', 'в', '—', 'к', 'на'])
+        alp = 'йцукенгшщзхъэждлорпавыфячсмитьбюё1234567890' + string.ascii_letters
+        while i < len(data):
+            if data[i] in stop_words:
+                data.pop(i)
+                continue
+            for letter in data[i]:
+                if letter not in alp:
+                    data.pop(i)
+                    break
+            else:
+                data[i] = morph.parse(data[i])[0].normal_form
+                i += 1
+
+    def delete_cities(data: list):
+        i = 0
+        while i < len(data):
+            if data[i] in cities:
+                if data[i] == 'ул' and i + 1 < len(data):
+                    data.pop(i + 1)
+                data.pop(i)
+            else:
+                i += 1
+
+    def delete_names(data: list):
+        i = 0
+        while i < len(data):
+            if data[i] in names:
+                data.pop(i)
+            else:
+                i += 1
+
+    def clear_str(text: str):
+        tokens = word_tokenize(text.lower())
+        delete_bad_words(tokens)
+        delete_cities(tokens)
+        delete_names(tokens)
+        return " ".join(tokens)
+
+    if type(file_text) is str:
+        file_text = clear_str(file_text)
+
+    elif '__iter__' in dir(file_text):
+        file_text = list(file_text)
+
+        for counter, text in enumerate(file_text):
+            file_text[counter] = clear_str(text)
+
+    return file_text
+
