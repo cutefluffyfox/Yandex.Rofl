@@ -85,13 +85,13 @@ class AddAnswer extends React.Component{
           style={{paddingBottom:"20px"}}>
           <InputGroup.Prepend>
             <InputGroup.Text
-              style={{width: "100px", textAlign}}>Ответ</InputGroup.Text>
+              style={{width: "100px", textAlign:"center"}}>Ответ</InputGroup.Text>
           </InputGroup.Prepend>
           <FormControl
             onChange={event => {
               this.setState({
                 description: event.target.value,
-              }, console.log(event.target.value))
+              })
             }}
             style={{minHeight: "41px"}}
             as="textarea"
