@@ -60,7 +60,7 @@ class App extends React.Component{
         break;
       case 1:
         mainBlock =
-        <Row style={{paddingTop: "20%"}}>
+        <Row style={{paddingTop: "10%"}}>
           <Col>
             <AddAnswer/>
           </Col>
