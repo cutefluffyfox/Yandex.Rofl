@@ -11,7 +11,7 @@ class App extends React.Component{
     super(props);
     this.state = {
       switch: 0,
-      answer: "",
+      answer: [],
     }
     this.getResult = this.getResult.bind(this);
     this.changeRender = this.changeRender.bind(this);
@@ -49,7 +49,7 @@ class App extends React.Component{
                  paddingTop: "20px",
                }}>
             <Find getResult={this.getResult}/>
-            <Results data={(this.state.answer.length) ? this.state.answer: [] } />
+            <Results data={ this.state.answer } />
           </Col>
         </Row>;
         break;
