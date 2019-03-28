@@ -5,8 +5,8 @@ class SearchItem extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      name: this.props.problem,
-      answer: this.props.answer,
+      name: this.props.description,
+      answer: this.props.reply,
     }
   }
   render(){
