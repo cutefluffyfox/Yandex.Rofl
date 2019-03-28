@@ -21,47 +21,33 @@ names = list(map(str.lower, names))
 
 
 def tokenize_me(file_text):
-    def delete_bad_words(data: list):
-        i = 0
+    def delete(data: list):
         morph = MorphAnalyzer()
         stop_words = stopwords.words('russian')
         stop_words.extend(['что', 'это', 'так', 'вот', 'быть', 'как', 'в', '—', 'к', 'на'])
         alp = 'йцукенгшщзхъэждлорпавыфячсмитьбюё1234567890' + string.ascii_letters
+
+        i = 0
+
         while i < len(data):
-            if data[i] in stop_words:
+            if data[i] in cities or data[i] in names or data[i] in stop_words:
+                if data[i] == 'ул' and i + 1 < len(data):
+                    data.pop(i + 1)
                 data.pop(i)
                 continue
+
             for letter in data[i]:
                 if letter not in alp:
                     data.pop(i)
                     break
+
             else:
                 data[i] = morph.parse(data[i])[0].normal_form
                 i += 1
 
-    def delete_cities(data: list):
-        i = 0
-        while i < len(data):
-            if data[i] in cities:
-                if data[i] == 'ул' and i + 1 < len(data):
-                    data.pop(i + 1)
-                data.pop(i)
-            else:
-                i += 1
-
-    def delete_names(data: list):
-        i = 0
-        while i < len(data):
-            if data[i] in names:
-                data.pop(i)
-            else:
-                i += 1
-
     def clear_str(text: str):
         tokens = word_tokenize(text.lower())
-        delete_bad_words(tokens)
-        delete_cities(tokens)
-        delete_names(tokens)
+        delete(tokens)
         return " ".join(tokens)
 
     if type(file_text) is str:
@@ -74,4 +60,3 @@ def tokenize_me(file_text):
             file_text[counter] = clear_str(text)
 
     return file_text
-
