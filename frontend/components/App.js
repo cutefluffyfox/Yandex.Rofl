@@ -17,19 +17,16 @@ class App extends React.Component{
     this.changeRender = this.changeRender.bind(this);
   };
 
-
   getResult(parametr){
-    console.log(this.state.answer);
     this.setState({
       answer: parametr,
     })
   }
 
-
   changeRender(num){
     this.setState({
       switch: num,
-    }, console.log(num));
+    });
   }
   render(){
     let mainBlock = null;

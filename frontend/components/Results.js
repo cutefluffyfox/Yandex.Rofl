@@ -12,7 +12,11 @@ class Results extends React.Component{
     };
   }
 
-
+  componentWillUpdate(nextProps){
+    this.setState({
+      answer: nextProps.data,
+    })
+  }
 
   render(){
     let renderProblems = this.state.answer.map(v =>
