@@ -12,7 +12,7 @@ class Results extends React.Component{
     };
   }
 
-  componentWillUpdate(nextProps){
+  componentWillReceiveProps(nextProps){
     this.setState({
       answer: nextProps.data,
     })
