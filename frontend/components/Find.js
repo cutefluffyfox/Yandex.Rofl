@@ -17,61 +17,57 @@ class Find extends React.Component{
   }
 
   sendSubmit(){
-    var letter = this.state.findString;
-    if(letter == ''){
-      return;
-    }
-    else{
-
-      this.setState({
-        isLoading: true,
-      });
-
-      fetch('/Find',
-      {
-        method: 'post',
-        headers: {
-          'Content-Type':'application/json',
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
-        },
-        body: JSON.stringify({
-         "searchValue": letter
-        }),
-      })
-      .then(
-      function(response) {
-        this.setState({
-          isLoading: false,
-        });
-        if (response.status !== 200) {
-          console.log('Looks like there was a problem. Status Code: ' +
-            response.status);
+      const main = this;
+      let letter = this.state.findString;
+      if(letter == ''){
           return;
         }
-        // Examine the text in the response
-        response.json()
-        .then(function(data) {
-          console.log(data);
-          this.props.getResult(data);
+      else{
+          main.setState({
+            isLoading: true,
+          });
+
+          fetch('/Find',
+          {
+            method: 'post',
+            headers: {
+              'Content-Type':'application/json',
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+            },
+            body: JSON.stringify({
+             "searchValue": letter
+            }),
+          })
+          .then(
+          function(response) {
+            main.setState({
+              isLoading: false,
+            });
+            if (response.status !== 200) {
+              console.log('Looks like there was a problem. Status Code: ' +
+                response.status);
+              return;
+            }
+            // Examine the text in the response
+            response.json()
+            .then(function(data) {
+              console.log(data);
+              main.props.getResult(data);
+            });
+          }
+        )
+        .catch(
+          function(err) {
+            main.setState({
+              isLoading: false,
+            });
+          console.log('Fetch Error :-S', err);
         });
       }
-    )
-    .catch(function(err) {
-      this.setState({
-        isLoading: false,
-      });
-      console.log('Fetch Error :-S', err);
-    });
   }
-  }
-
-
-
-
 
   render(){
-
     let loading = (this.state.isLoading) ?
     <Spinner
       as="span"
@@ -79,7 +75,7 @@ class Find extends React.Component{
       size="sm"
       role="status"
       aria-hidden="true"
-    /> : null;
+      /> : null;
 
     return(
       <InputGroup className="mb-3">
@@ -97,10 +93,8 @@ class Find extends React.Component{
             </Button>
           </InputGroup.Append>
           </InputGroup>
-    );
-  }
-
-
+        );
+      }
 };
 
 export default Find;

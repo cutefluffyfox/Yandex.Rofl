@@ -13,13 +13,13 @@ class App extends React.Component{
       switch: 0,
       answer: "",
     }
-    this.print = this.print.bind(this);
     this.getResult = this.getResult.bind(this);
     this.changeRender = this.changeRender.bind(this);
   };
 
 
   getResult(parametr){
+    console.log(this.state.answer);
     this.setState({
       answer: parametr,
     })
@@ -31,11 +31,6 @@ class App extends React.Component{
       switch: num,
     }, console.log(num));
   }
-
-  print(){
-    console.log("All work")
-  };
-
   render(){
     let mainBlock = null;
 
@@ -43,10 +38,10 @@ class App extends React.Component{
       case 0:
         mainBlock =
         <Row style={{
-                marginTop: (this.state.answer.length) ? "0%" : "11%",
+                marginTop: (this.state.answer.length) ? "0%" : "15%",
               }}>
           <Col md={{ span: 4, offset: 4 }}>
-            <Image src="./image/Croc_logo_eng_RGB.png" rounded
+            <Image src="image/Croc_logo_eng_RGB.png" rounded
                    style={{width: "100%"}}/>
           </Col>
           <Col md={12}

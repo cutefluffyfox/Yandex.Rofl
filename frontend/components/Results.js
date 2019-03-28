@@ -18,7 +18,7 @@ class Results extends React.Component{
     let renderProblems = this.state.answer.map(v =>
       <SearchItem problem={v.problem} answer={v.answer} />
     );
-    let header = (this.props.data.length) ? <Card.Header> Ответы: </Card.Header>: null;
+    let header = (this.state.answer.length) ? <Card.Header> Ответы: </Card.Header>: null;
 
     return(
       <div>
