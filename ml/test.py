@@ -2,6 +2,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from pandas import read_excel, read_csv
 from os import path, getcwd
 from sklearn.neighbors import KNeighborsClassifier
+
 df = read_csv(path.join("E:\трэш дата", "clear_text.csv"))
 df = df[df['clear_text'] == df['clear_text']]
 
@@ -21,4 +22,3 @@ ind = first
 # for an in a.predict(test_x):
 #     print(df["Подробное описание"][ind], an, sep="\n----\n", end="\n====================================\n\n\n\n\n")
 #     ind += 1
-

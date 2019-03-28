@@ -1,4 +1,4 @@
-from library.flask import Flask, render_template, request
+from flask import Flask, render_template, request
 from backend.db import *
 
 app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
