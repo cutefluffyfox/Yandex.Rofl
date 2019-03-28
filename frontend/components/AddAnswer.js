@@ -4,24 +4,40 @@ import {InputGroup, FormControl, Button} from "react-bootstrap";
 class AddAnswer extends React.Component{
   constructor(props){
     super(props);
-
+    this.state = {
+      id: '',
+      callback: '',
+      reply: '',
+      description: '',
+    }
   }
+
 
   render(){
     return(
     <div
       style={{
-        marginTop: "8%"
+        marginTop: "0px",
+        marginLeft: "20%",
       }}
       >
       <InputGroup className="mb-3" style={{
             width: "50%",
-            paddingLeft: "10%",
+            minWidth: "100px",
+            minHeight: "32px",
       }}>
         <InputGroup.Prepend>
           <InputGroup.Text id="inputGroup-sizing-default">ID</InputGroup.Text>
         </InputGroup.Prepend>
         <FormControl
+          onChange={event => {
+            this.setState({
+              id: event.target.value,
+            })
+          }}
+          style={{
+            minWidth: "54px",
+          }}
           aria-label="Default"
           placeholder="Номер id"
           aria-describedby="inputGroup-sizing"
@@ -29,7 +45,6 @@ class AddAnswer extends React.Component{
       </InputGroup>
       <div style={{
           width: "80%",
-          marginLeft: "100px",
         }}>
         <InputGroup
           style={{paddingBottom:"20px"}}>
@@ -38,6 +53,11 @@ class AddAnswer extends React.Component{
               style={{width: "100px"}}>Проблема</InputGroup.Text>
           </InputGroup.Prepend>
           <FormControl
+            onChange={event => {
+              this.setState({
+                callback: event.target.value,
+              })
+            }}
             style={{minHeight: "41px"}}
             as="textarea"
             placeholder="Описание проблемы"
@@ -50,6 +70,11 @@ class AddAnswer extends React.Component{
               style={{width: "100px"}}>Решение</InputGroup.Text>
           </InputGroup.Prepend>
           <FormControl
+            onChange={event => {
+              this.setState({
+                reply: event.target.value,
+              })
+            }}
             style={{minHeight: "41px"}}
             aria-label="Default"
             placeholder="Краткий ответ на проблему"
@@ -60,9 +85,14 @@ class AddAnswer extends React.Component{
           style={{paddingBottom:"20px"}}>
           <InputGroup.Prepend>
             <InputGroup.Text
-              style={{width: "100px"}}>Ответ</InputGroup.Text>
+              style={{width: "100px", textAlign:"center"}}>Ответ</InputGroup.Text>
           </InputGroup.Prepend>
           <FormControl
+            onChange={event => {
+              this.setState({
+                description: event.target.value,
+              })
+            }}
             style={{minHeight: "41px"}}
             as="textarea"
             placeholder="Решение"
