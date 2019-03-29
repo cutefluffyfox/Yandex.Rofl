@@ -1,3 +1,8 @@
+from database.db import *
+from gensim.downloader import load as load_module
+from sklearn.metrics.pairwise import cosine_similarity
+import pymorphy2
+
 """
 МЫ НЕ ГАРАНТИРУЕМ, ЧТО ЭТО РАБОТАЕТ
 МЫ НЕ ГАРАНТИРУЕМ, ЧТО ЭТО РАБОТАЕТ КАК ВЫ ДУМАЕТЕ
@@ -7,14 +12,11 @@
 
 
 def ml(phrase: str) -> list:
+
     """
     Получает на вход строку с 'красивыми' данными разделённые пробелами, делает анализ запроса и возращает
     список топ-5 (от наиболее похожих до наименее похожих) номеров ошибок.
     """
-    from pandas import read_csv
-    from gensim.downloader import load as load_module
-    from sklearn.metrics.pairwise import cosine_similarity
-    import pymorphy2
 
     morph = pymorphy2.MorphAnalyzer()
 
@@ -26,9 +28,16 @@ def ml(phrase: str) -> list:
 
     model = load_module('word2vec-ruscorpora-300')
 
-    df = read_csv(r"F:\трэш дата\final_text.csv")
-    was = df["clear_text"][:]
-    answers = df["Номер кейса"][:]
+    db = DB()
+    clean_table = CleanTable(db.get_connection())
+    data = clean_table.get_all()
+
+    answers = []
+    was = []
+
+    for _ in data:
+        answers.append(_[1])
+        was.append(_[2])
 
     vec = sum([model[f"{word}_{word_type(word)}"] if f"{word}_{word_type(word)}" in model.vocab
                else 0 for word in phrase.split()])

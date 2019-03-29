@@ -4,7 +4,7 @@ import string
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 
-city_csv = read_csv('city.csv')
+city_csv = read_csv('csv/city.csv')
 cities = list(city_csv['country_en'].apply(str))
 cities.extend(list(city_csv['region_en'].apply(str)))
 cities.extend(list(city_csv['city_en'].apply(str)))
@@ -14,9 +14,9 @@ cities.extend(list(city_csv['city'].apply(str)))
 cities.extend(['ул'])
 cities = list(set(map(str.lower, cities)))
 
-names = list(read_csv('surnames.csv')['Surname'].apply(str))
-names.extend(list(read_csv('rus_names.csv')['Name'].apply(str)))
-names.extend(list(read_csv('for_names.csv')['name'].apply(str)))
+names = list(read_csv('csv/surnames.csv')['Surname'].apply(str))
+names.extend(list(read_csv('csv/rus_names.csv')['Name'].apply(str)))
+names.extend(list(read_csv('csv/for_names.csv')['name'].apply(str)))
 names = list(map(str.lower, names))
 
 

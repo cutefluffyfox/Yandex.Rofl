@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from backend.db import *
+from database.db import *
 
 app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
 
