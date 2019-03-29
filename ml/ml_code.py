@@ -1,10 +1,8 @@
-from pandas import read_csv
-from sklearn.metrics.pairwise import cosine_similarity
-from gensim.models.keyedvectors import Word2VecKeyedVectors
 from database.db import *
-from gensim.downloader import load as load_module
 from sklearn.metrics.pairwise import cosine_similarity
-import pymorphy2
+from pymorphy2 import MorphAnalyzer
+from time import time
+from gensim.models.keyedvectors import Word2VecKeyedVectors
 
 """
 МЫ НЕ ГАРАНТИРУЕМ, ЧТО ЭТО РАБОТАЕТ
@@ -21,7 +19,7 @@ def ml(phrase: str) -> list:
     список топ-5 (от наиболее похожих до наименее похожих) номеров ошибок.
     """
 
-    morph = pymorphy2.MorphAnalyzer()
+    morph = MorphAnalyzer()
 
     def word_type(word: str) -> str:
         """
@@ -31,7 +29,18 @@ def ml(phrase: str) -> list:
 
     def start_timer():
         global start
-        start = time.time()
+        start = time()
+
+    def end_timer(text: str):
+        global start
+        print("-----------------------------")
+        print(time() - start)
+        print(text)
+        print("-----------------------------")
+
+    start_timer()
+    model = Word2VecKeyedVectors.load("russian_database")
+    end_timer("Load rus database")
 
     db = DB()
     clean_table = CleanTable(db.get_connection())
