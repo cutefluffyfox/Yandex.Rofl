@@ -1,3 +1,7 @@
+from passlib.hash import pbkdf2_sha256
+from json import dumps
+
+
 class DB:
     def __init__(self):
         from sqlite3 import connect
@@ -11,7 +15,7 @@ class DB:
         self.conn.close()
 
 
-class UsersModel:
+class UsersTable:
     def __init__(self, connection):
         self.connection = connection
 
@@ -19,23 +23,24 @@ class UsersModel:
         cursor = self.connection.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS users 
                             (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                             user_name VARCHAR(50),
-                             password_hash VARCHAR(128)
+                             login VARCHAR(25),
+                             user_name VARCHAR(30),
+                             password_hash VARCHAR(100)
                              )''')
         cursor.close()
         self.connection.commit()
 
-    def insert(self, user_name, password_hash):
+    def insert(self, login, user_name, password):
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO users 
-                          (user_name, password_hash) 
-                          VALUES (?,?)''', (user_name, password_hash))
+                          (login, user_name, password_hash) 
+                          VALUES (?,?,?)''', (login, user_name, pbkdf2_sha256.hash(password)))
         cursor.close()
         self.connection.commit()
 
-    def get(self, user_id):
+    def get(self, login):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE id = ?", (str(user_id),))
+        cursor.execute("SELECT * FROM users WHERE login = ?", (str(login),))
         row = cursor.fetchone()
         return row
 
@@ -45,12 +50,21 @@ class UsersModel:
         rows = cursor.fetchall()
         return rows
 
-    def exists(self, user_name, password_hash):
+    def exists(self, login):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE user_name = ? AND password_hash = ?",
-                       (user_name, password_hash))
+        cursor.execute("SELECT * FROM users WHERE login = ?",
+                       (login, ))
         row = cursor.fetchone()
         return (True, row[0]) if row else (False,)
+
+    def check_password(self, login, password):
+        row = self.get(login)
+        answer = 'error'
+
+        if row and pbkdf2_sha256.verify(password, row[-1]):
+            answer = 'success'
+
+        return dumps(answer)
 
 
 class ProblemsTable:
