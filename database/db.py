@@ -1,7 +1,7 @@
 class DB:
     def __init__(self):
         from sqlite3 import connect
-        conn = connect('crock.db', check_same_thread=False)
+        conn = connect('../database/crock.db', check_same_thread=False)
         self.conn = conn
 
     def get_connection(self):
@@ -138,19 +138,19 @@ class CleanTable:
 
     def get(self, problem_id):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM problems WHERE problem_id = ?", (problem_id,))
+        cursor.execute("SELECT * FROM clear WHERE problem_id = ?", (problem_id,))
         row = cursor.fetchone()
         return row
 
     def get_all(self):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM problems")
+        cursor.execute("SELECT * FROM clear")
         rows = cursor.fetchall()
         return rows
 
     def delete(self, problem_id):
         cursor = self.connection.cursor()
-        cursor.execute('''DELETE FROM problems WHERE problem_id = ?''', (problem_id,))
+        cursor.execute('''DELETE FROM clear WHERE problem_id = ?''', (problem_id,))
         cursor.close()
         self.connection.commit()
 
