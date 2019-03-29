@@ -10,12 +10,57 @@ class AddAnswer extends React.Component{
       reply: '',
       description: '',
     }
+    this.sendSubmit = this.sendSubmit.bind(this);
   }
+
+  sendSubmit(){
+    const main = this;
+    if(!this.state.id.length ||
+       !this.state.callback.length ||
+       !this.state.reply.length ||
+       !this.state.description.length){
+         return;
+       }
+    else{
+      fetch('/Record',
+      {
+        method: 'post',
+        headers: {
+          'Content-Type':'application/json',
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+        },
+        body: JSON.stringify({
+          "id": main.state.id,
+          "callback": main.state.callback,
+          "reply": main.state.reply,
+          "description": main.state.description,
+        }),
+      })
+      .then(
+        function(response){
+          if(response.status != 200){
+            console.log("Status Code:" + response.status);
+            return
+          }
+          response.json()
+          .then(function(data){
+            console.log(data);
+          })
+        }
+       )
+       .catch(
+         function(err){
+           console.log("Fetch Error :-s", err)
+         });
+      }
+  }
+
 
 
   render(){
     return(
-    <div
+    <div md={6}
       style={{
         marginTop: "0px",
         marginLeft: "20%",
@@ -101,7 +146,8 @@ class AddAnswer extends React.Component{
         <Button variant="primary" size="lg" block
           style={{
             height: "100%",
-          }}>
+          }}
+          onClick={this.sendSubmit}>
             Отправить решение
         </Button>
       </div>

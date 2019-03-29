@@ -1,5 +1,5 @@
 import React from 'react';
-import {Container, Row, Col, Button, InputGroup, FormControl, Nav} from "react-bootstrap";
+import {Container, Row, Col, Button, InputGroup, FormControl, Navbar, Nav} from "react-bootstrap";
 
 class Navigation extends React.Component{
   constructor(props){
@@ -8,30 +8,24 @@ class Navigation extends React.Component{
   }
 
   render(){
-    return(
-    <Nav className="justify-content-end" activeKey="/home">
-      <Nav.Item>
-        <Nav.Link eventKey="link-0"
-          onClick={() => this.props.switchNavigation(0)}
-        >Главная</Nav.Link>
-      </Nav.Item>
-      <Nav.Item>
-        <Nav.Link eventKey="link-1"
-          onClick={() => this.props.switchNavigation(1)}
-        >Добавить решение</Nav.Link>
-      </Nav.Item>
-      <Nav.Item>
-        <Nav.Link eventKey="link-2"
-          onClick={() => this.props.switchNavigation(2)}
-        >Войти</Nav.Link>
-      </Nav.Item>
-      <Nav.Item>
-        <Nav.Link eventKey="link-3"
-          onClick={() => this.props.switchNavigation(3)}
-        > Регистрация </Nav.Link>
-      </Nav.Item>
-    </Nav>
-  )
+    let mainNav =
+      <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
+        <Navbar.Brand onClick={() => this.props.switchNavigation(0)}>
+          CROC
+        </Navbar.Brand>
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+              <Nav className="mr-auto">
+              </Nav>
+              <Nav>
+                <Nav.Link onClick={() => this.props.switchNavigation(1)}>Добавить</Nav.Link>
+                <Nav.Link eventKey={2} onClick={() => this.props.switchNavigation(2)}>
+                  Авторизация
+                </Nav.Link>
+              </Nav>
+            </Navbar.Collapse>
+      </Navbar>;
+    return(mainNav);
   }
 }
 
