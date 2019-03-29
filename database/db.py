@@ -191,7 +191,6 @@ def add_data_from_excel(path):
 
 
 def get_results(problems_id: list):
-    from json import dumps
     db = DB()
     problem_table = ProblemsTable(db.get_connection())
     res = []
@@ -203,7 +202,7 @@ def get_results(problems_id: list):
                     'description': data[4],
                     'problem_id': problem_id})
 
-    return dumps(res)
+    return res
 
 #
 # def add_data_from_csv_to_clear(path):
