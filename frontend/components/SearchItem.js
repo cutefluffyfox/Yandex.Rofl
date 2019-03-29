@@ -7,6 +7,7 @@ class SearchItem extends React.Component{
     this.state = {
       name: this.props.problem,
       answer: this.props.answer,
+      id: this.props.id,
     }
   }
   render(){
@@ -14,8 +15,20 @@ class SearchItem extends React.Component{
       <div>
       <Card>
         <Card.Body>
-          <Card.Title>{this.state.name}</Card.Title>
-          <Card.Text>
+          <Card.Title
+              style={{
+                fontSize:"15pt",
+                fontFamily: "Arial",
+              }}
+            >{this.state.id}</Card.Title>
+          <Card.Text
+              style={{
+                fontSize: "12pt",
+                fontFamily: 'Arial',
+              }}
+            >
+            {this.state.name}
+            <hr/>
             {this.state.answer}
           </Card.Text>
         </Card.Body>

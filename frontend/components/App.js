@@ -38,8 +38,10 @@ class App extends React.Component{
                 marginTop: (this.state.answer.length) ? "0%" : "15%",
               }}>
           <Col md={{ span: 4, offset: 4 }}>
-            <Image src="frontend/image/Croc_logo_eng_RGB.png" rounded
-                   style={{width: "100%"}}/>
+            { (this.state.answer.length) ? null
+            : <Image src="frontend/image/Croc_logo_eng_RGB.png"
+                   rounded
+                   style={{width: "100%"}}/> }
           </Col>
           <Col md={12}
                style={{
