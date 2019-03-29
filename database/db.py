@@ -1,7 +1,7 @@
 class DB:
     def __init__(self):
         from sqlite3 import connect
-        conn = connect('crock.db', check_same_thread=False)
+        conn = connect('../database/crock.db', check_same_thread=False)
         self.conn = conn
 
     def get_connection(self):
@@ -123,34 +123,46 @@ class CleanTable:
         cursor.close()
         self.connection.commit()
 
-    def insert(self, problem_id, description, vector):
+    def insert(self, problem_id, description):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM problems WHERE problem_id = ?", (problem_id,))
+        cursor.execute("SELECT * FROM clear WHERE problem_id = ?", (problem_id,))
         row = cursor.fetchone()
 
-        if row is not None:
-            cursor.execute('''INSERT INTO clear 
-                            (problem_id, description, vector) 
-                            VALUES (?,?, ?)''', (problem_id, description, vector))
+        if row is None:
+            cursor.execute('''INSERT INTO problems 
+                            (problem_id, description) 
+                            VALUES (?,?)''', (problem_id, description))
 
+        else:
+            cursor.execute('''UPDATE problems
+                              SET description = ? 
+                              WHERE problem_id = ?''', (description, problem_id))
+        cursor.close()
+        self.connection.commit()
+
+    def add_vector(self, problem_id, vector: str):
+        cursor = self.connection.cursor()
+        cursor.execute('''UPDATE problems
+                                      SET vector = ?
+                                      WHERE problem_id = ?''', (vector, problem_id))
         cursor.close()
         self.connection.commit()
 
     def get(self, problem_id):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM problems WHERE problem_id = ?", (problem_id,))
+        cursor.execute("SELECT * FROM clear WHERE problem_id = ?", (problem_id,))
         row = cursor.fetchone()
         return row
 
     def get_all(self):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM problems")
+        cursor.execute("SELECT * FROM clear")
         rows = cursor.fetchall()
         return rows
 
     def delete(self, problem_id):
         cursor = self.connection.cursor()
-        cursor.execute('''DELETE FROM problems WHERE problem_id = ?''', (problem_id,))
+        cursor.execute('''DELETE FROM clear WHERE problem_id = ?''', (problem_id,))
         cursor.close()
         self.connection.commit()
 
@@ -179,7 +191,6 @@ def add_data_from_excel(path):
 
 
 def get_results(problems_id: list):
-    from json import dumps
     db = DB()
     problem_table = ProblemsTable(db.get_connection())
     res = []
@@ -191,7 +202,7 @@ def get_results(problems_id: list):
                     'description': data[4],
                     'problem_id': problem_id})
 
-    return dumps(res)
+    return res
 
 #
 # def add_data_from_csv_to_clear(path):

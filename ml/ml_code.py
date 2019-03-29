@@ -1,3 +1,11 @@
+from pandas import read_csv
+from sklearn.metrics.pairwise import cosine_similarity
+from gensim.models.keyedvectors import Word2VecKeyedVectors
+from database.db import *
+from gensim.downloader import load as load_module
+from sklearn.metrics.pairwise import cosine_similarity
+import pymorphy2
+
 """
 МЫ НЕ ГАРАНТИРУЕМ, ЧТО ЭТО РАБОТАЕТ
 МЫ НЕ ГАРАНТИРУЕМ, ЧТО ЭТО РАБОТАЕТ КАК ВЫ ДУМАЕТЕ
@@ -7,15 +15,11 @@
 
 
 def ml(phrase: str) -> list:
+
     """
     Получает на вход строку с 'красивыми' данными разделённые пробелами, делает анализ запроса и возращает
     список топ-5 (от наиболее похожих до наименее похожих) номеров ошибок.
     """
-    from pandas import read_csv
-    import time
-    from sklearn.metrics.pairwise import cosine_similarity
-    import pymorphy2
-    from gensim.models.keyedvectors import Word2VecKeyedVectors
 
     morph = pymorphy2.MorphAnalyzer()
 
@@ -29,21 +33,16 @@ def ml(phrase: str) -> list:
         global start
         start = time.time()
 
-    def end_timer(text: str):
-        global start
-        print("-------------------")
-        print(time.time() - start)
-        print("-------------------")
+    db = DB()
+    clean_table = CleanTable(db.get_connection())
+    data = clean_table.get_all()
 
-    start_timer()
-    model = Word2VecKeyedVectors.load("russian_database")
-    end_timer("Load rus database")
+    answers = []
+    was = []
 
-    start_timer()
-    df = read_csv(r"F:\трэш дата\final_text.csv")
-    was = df["clear_text"][:]
-    answers = df["Номер кейса"][:]
-    end_timer("Connect BD")
+    for _ in data:
+        answers.append(_[1])
+        was.append(_[2])
 
     start_timer()
     vec = sum([model[f"{word}_{word_type(word)}"] if f"{word}_{word_type(word)}" in model.vocab
