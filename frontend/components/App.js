@@ -1,62 +1,74 @@
 import React from "react";
-import {Container, Row, Col, Button, InputGroup, FormControl, Nav} from "react-bootstrap";
+import {Container, Row, Col, Image} from "react-bootstrap";
 import Navigation from "./Navigation";
+import Find from "./Find";
+import Results from "./Results";
+import AddAnswer from "./AddAnswer";
 
 class App extends React.Component{
 
   constructor(props){
     super(props);
     this.state = {
-      c: 0,
-    };
-    this.incr = this.incr.bind(this);
+      switch: 0,
+      answer: [],
+    }
+    this.getResult = this.getResult.bind(this);
+    this.changeRender = this.changeRender.bind(this);
   };
 
-  incr(){
-    this.setState({c: this.state.c + 1})
-  };
+  getResult(parametr){
+    this.setState({
+      answer: parametr,
+    })
+  }
 
+  changeRender(num){
+    this.setState({
+      switch: num,
+    });
+  }
   render(){
+    let mainBlock = null;
 
-    // let nav =
-    // <Nav className="justify-content-end" activeKey="/home">
-    //   <Nav.Item>
-    //     <Nav.Link>Главная</Nav.Link>
-    //   </Nav.Item>
-    //   <Nav.Item>
-    //     <Nav.Link eventKey="link-1">Популярное</Nav.Link>
-    //   </Nav.Item>
-    //   <Nav.Item>
-    //     <Nav.Link eventKey="link-2">Войти</Nav.Link>
-    //   </Nav.Item>
-    //   <Nav.Item>
-    //     <Nav.Link eventKey="link-3"> Регистрация </Nav.Link>
-    //   </Nav.Item>
-    // </Nav>;
-
-    return(
-      <Container style={{ height: '100%' }}>
-        <Row style={{height:'40%'}}>
+    switch (this.state.switch) {
+      case 0:
+        mainBlock =
+        <Row style={{
+                marginTop: (this.state.answer.length) ? "0%" : "15%",
+              }}>
+          <Col md={{ span: 4, offset: 4 }}>
+            <Image src="frontend/image/Croc_logo_eng_RGB.png" rounded
+                   style={{width: "100%"}}/>
+          </Col>
+          <Col md={12}
+               style={{
+                 paddingTop: "20px",
+               }}>
+            <Find getResult={this.getResult}/>
+            <Results data={ this.state.answer } />
+          </Col>
+        </Row>;
+        break;
+      case 1:
+        mainBlock =
+        <Row style={{paddingTop: "10%"}}>
           <Col>
-            <Navigation />
+            <AddAnswer/>
           </Col>
         </Row>
+        break;
+      default:
+        mainBlock = null;
+    }
+    return(
+      <Container style={{ height: '100%', width: "100%" }}>
         <Row>
           <Col>
-            <main>
-            <InputGroup className="mb-3">
-              <FormControl
-                  placeholder={this.state.c}
-                  aria-label="Recipient's username"
-                  aria-describedby="basic-addon2"
-                />
-                <InputGroup.Append>
-                  <Button variant="outline-success" onClick={this.incr}>Поиск</Button>
-                </InputGroup.Append>
-              </InputGroup>
-            </main>
+            <Navigation switchNavigation={this.changeRender}/>
           </Col>
         </Row>
+          {mainBlock}
       </Container>
     );
   }

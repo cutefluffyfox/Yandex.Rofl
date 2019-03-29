@@ -1,4 +1,4 @@
-from library.flask import Flask, render_template, request
+from flask import Flask, render_template, request
 from backend.db import *
 
 app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
@@ -13,7 +13,7 @@ def index():
 @app.route('/Find', methods=['POST'])
 def find():
     if request.method == 'POST':
-        data = eval(request.data.decode('utf-8'))
+        data = eval(request.data.decode('utf-8'))['searchValue']
         # return get_result(Here ML is changing the data)
         return get_results(['SD1213575',
                             'SD1213532',
