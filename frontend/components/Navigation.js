@@ -4,7 +4,6 @@ import {Container, Row, Col, Button, InputGroup, FormControl, Navbar, Nav} from 
 class Navigation extends React.Component{
   constructor(props){
     super(props);
-
   }
 
   render(){
