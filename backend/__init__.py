@@ -5,6 +5,10 @@ from backend.function_for_clean import tokenize_me
 from ml.ml_code import ml
 
 app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
+database = DB()
+problem_table = ProblemsTable(database.get_connection())
+users_table = UsersTable(database.get_connection())
+cleaning_table = DataToCleaning(database.get_connection())
 
 
 @app.route('/')
@@ -16,39 +20,53 @@ def index():
 @app.route('/Find', methods=['POST'])
 def find():
     if request.method == 'POST':
-        text = eval(request.data.decode('utf-8'))['searchValue']
-        # print(1)
-        text = tokenize_me(text)
-        # print(text)
-        res = ml(text)
-        # print(res)
-        return get_results(res)
-        # return dumps(get_results(['SD1213575',
-        #                           'SD1213532',
-        #                              'SD1213531',
-        #                           'SD1210912',
-        #                           'SD1210678']))
-    return 'not post'
+        answer = get_results(ml(tokenize_me(
+            eval(
+                request.data.decode('utf-8')
+            )['searchValue'])))
+
+    else:
+        answer = 'not post'
+
+    return dumps(answer)
 
 
 @app.route('/Record', methods=['POST'])
 def record():
     if request.method == 'POST':
         data = eval(request.data.decode('utf-8'))
-        database = DB()
-        problem_table = ProblemsTable(database.get_connection())
 
-        if problem_table.get(data['id']):
+        if not problem_table.get(data['id']):
             problem_table.insert(data['id'],
-                                 data['callbacks'],
+                                 data['callback'],
                                  data['reply'],
                                  data['description'])
+            cleaning_table.insert(data['id'],
+                                  data['description'])
             answer = 'success'
 
         else:
             answer = 'ID Error'
 
-        return dumps(answer)
+    else:
+        answer = "I don't know what the hell I was thinking"
+
+    return dumps(answer)
+
+
+@app.route('/Login', methods=['POST'])
+def login():
+    if request.method == 'POST':
+        data = eval(request.data.decode('utf-8'))
+        log = data['login']
+        password = data['password']
+
+        answer = users_table.check_password(log, password)
+
+    else:
+        answer = 'This is tha gate to infinity'
+
+    return dumps(answer)
 
 
 if __name__ == '__main__':

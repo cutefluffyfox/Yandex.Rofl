@@ -1,6 +1,10 @@
+from passlib.hash import pbkdf2_sha256
+from sqlite3 import connect
+from pandas import read_excel
+
+
 class DB:
     def __init__(self):
-        from sqlite3 import connect
         conn = connect('../database/crock.db', check_same_thread=False)
         self.conn = conn
 
@@ -11,7 +15,7 @@ class DB:
         self.conn.close()
 
 
-class UsersModel:
+class UsersTable:
     def __init__(self, connection):
         self.connection = connection
 
@@ -19,23 +23,24 @@ class UsersModel:
         cursor = self.connection.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS users 
                             (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                             user_name VARCHAR(50),
-                             password_hash VARCHAR(128)
+                             login VARCHAR(25),
+                             user_name VARCHAR(30),
+                             password_hash VARCHAR(100)
                              )''')
         cursor.close()
         self.connection.commit()
 
-    def insert(self, user_name, password_hash):
+    def insert(self, login, user_name, password):
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO users 
-                          (user_name, password_hash) 
-                          VALUES (?,?)''', (user_name, password_hash))
+                          (login, user_name, password_hash) 
+                          VALUES (?,?,?)''', (login, user_name, pbkdf2_sha256.hash(password)))
         cursor.close()
         self.connection.commit()
 
-    def get(self, user_id):
+    def get(self, login):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE id = ?", (str(user_id),))
+        cursor.execute("SELECT * FROM users WHERE login = ?", (str(login),))
         row = cursor.fetchone()
         return row
 
@@ -45,12 +50,21 @@ class UsersModel:
         rows = cursor.fetchall()
         return rows
 
-    def exists(self, user_name, password_hash):
+    def exists(self, login):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE user_name = ? AND password_hash = ?",
-                       (user_name, password_hash))
+        cursor.execute("SELECT * FROM users WHERE login = ?",
+                       (login, ))
         row = cursor.fetchone()
         return (True, row[0]) if row else (False,)
+
+    def check_password(self, login, password):
+        row = self.get(login)
+        answer = 'error'
+
+        if row and pbkdf2_sha256.verify(password, row[-1]):
+            answer = 'success'
+
+        return answer
 
 
 class ProblemsTable:
@@ -129,12 +143,12 @@ class CleanTable:
         row = cursor.fetchone()
 
         if row is None:
-            cursor.execute('''INSERT INTO problems 
+            cursor.execute('''INSERT INTO clear 
                             (problem_id, description) 
                             VALUES (?,?)''', (problem_id, description))
 
         else:
-            cursor.execute('''UPDATE problems
+            cursor.execute('''UPDATE clear
                               SET description = ? 
                               WHERE problem_id = ?''', (description, problem_id))
         cursor.close()
@@ -142,9 +156,9 @@ class CleanTable:
 
     def add_vector(self, problem_id, vector: str):
         cursor = self.connection.cursor()
-        cursor.execute('''UPDATE problems
-                                      SET vector = ?
-                                      WHERE problem_id = ?''', (vector, problem_id))
+        cursor.execute('''UPDATE clear
+                          SET vector = ?
+                          WHERE problem_id = ?''', (vector, problem_id))
         cursor.close()
         self.connection.commit()
 
@@ -167,8 +181,49 @@ class CleanTable:
         self.connection.commit()
 
 
+class DataToCleaning:
+    def __init__(self, connection):
+        self.connection = connection
+
+    def init_table(self):
+        cursor = self.connection.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS cleaning 
+                            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                             problem_id VARCHAR(30),
+                             description TEXT,
+                             )''')
+        cursor.close()
+        self.connection.commit()
+
+    def insert(self, problem_id, description):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM cleaning WHERE problem_id = ?", (problem_id,))
+        row = cursor.fetchone()
+
+        if row is None:
+            cursor.execute('''INSERT INTO cleaning 
+                            (problem_id, description) 
+                            VALUES (?,?)''', (problem_id, description))
+
+        else:
+            cursor.execute('''UPDATE cleaning
+                              SET description = ? 
+                              WHERE problem_id = ?''', (description, problem_id))
+        cursor.close()
+        self.connection.commit()
+
+    def get(self):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM cleaning WHERE id = 1")
+        row = cursor.fetchone()
+        if row:
+            cursor.execute('''DELETE FROM cleaning WHERE id = 1''')
+            cursor.close()
+            self.connection.commit()
+        return row
+
+
 def add_data_from_excel(path):
-    from pandas import read_excel
     db = DB()
     problem_table = ProblemsTable(db.get_connection())
     problem_table.init_table()
@@ -203,25 +258,3 @@ def get_results(problems_id: list):
                     'problem_id': problem_id})
 
     return res
-
-#
-# def add_data_from_csv_to_clear(path):
-#     from pandas import read_csv
-#
-#     db = DB()
-#     clean_table = CleanTable(db.get_connection())
-#     clean_table.init_table()
-#
-#     excel = read_csv(path)
-#     case_nums = list(excel['Номер кейса'])
-#     descriptions = list(excel['clear_text'])
-#
-#     for _ in range(len(excel)):
-#         case_num = case_nums.pop(0)
-#         description = descriptions.pop(0)
-#
-#         if all(map(lambda x: type(x) != float, [case_num, description])):
-#             clean_table.insert(case_num, description, '')
-#             print(_)
-#
-# add_data_from_csv_to_clear('final_text.csv')
