@@ -1,5 +1,5 @@
 import React from "react";
-import {InputGroup, FormControl, Button} from "react-bootstrap";
+import {InputGroup, FormControl, Button, Alert} from "react-bootstrap";
 
 class AddAnswer extends React.Component{
   constructor(props){
@@ -9,16 +9,66 @@ class AddAnswer extends React.Component{
       callback: '',
       reply: '',
       description: '',
+      textAlert: '',
     }
+    this.sendSubmit = this.sendSubmit.bind(this);
   }
+
+  sendSubmit(){
+    const main = this;
+    if(!this.state.id.length ||
+       !this.state.callback.length ||
+       !this.state.reply.length ||
+       !this.state.description.length){
+         main.setState({textAlert:
+           "Одно из полей все еще пустое. Заполните его!"
+         })
+         return;
+       }
+    else{
+      fetch('/Record',
+      {
+        method: 'post',
+        headers: {
+          'Content-Type':'application/json',
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+        },
+        body: JSON.stringify({
+          "id": main.state.id,
+          "callback": main.state.callback,
+          "reply": main.state.reply,
+          "description": main.state.description,
+        }),
+      })
+      .then(
+        function(response){
+          if(response.status != 200){
+            console.log("Status Code:" + response.status);
+            return
+          }
+          response.json()
+          .then(function(data){
+            console.log(data);
+          })
+        }
+       )
+       .catch(
+         function(err){
+           main.setState({textAlert: "Упссс... Проверьте подключение к интернету!"})
+           console.log("Fetch Error :-s", err)
+         });
+      }
+  }
+
 
 
   render(){
     return(
-    <div
+    <div md={8}
       style={{
         marginTop: "0px",
-        marginLeft: "20%",
+        marginLeft: "10%",
       }}
       >
       <InputGroup className="mb-3" style={{
@@ -77,7 +127,7 @@ class AddAnswer extends React.Component{
             }}
             style={{minHeight: "41px"}}
             aria-label="Default"
-            placeholder="Краткий ответ на проблему"
+            placeholder="Краткий ответ"
             aria-describedby="inputGroup-sizing"
           />
         </InputGroup>
@@ -99,11 +149,26 @@ class AddAnswer extends React.Component{
             aria-label="With textarea" />
         </InputGroup>
         <Button variant="primary" size="lg" block
-          style={{
-            height: "100%",
-          }}>
+          style={{height: "100%"}}
+          onClick={this.sendSubmit}>
             Отправить решение
         </Button>
+      </div>
+      <div
+          style={{
+              width: "80%",
+              marginTop: "10px",
+          }}
+        >
+        { (this.state.textAlert.length) ?
+        <Alert dismissible variant="danger"
+            onClick={() => {
+              this.setState({
+                textAlert: '',
+              })
+            }}>
+          <p>{this.state.textAlert}</p>
+          </Alert>: null}
       </div>
     </div>
   );
