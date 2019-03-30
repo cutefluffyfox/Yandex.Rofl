@@ -39,7 +39,7 @@ def ml(phrase: str) -> list:
         print("-----------------------------")
 
     start_timer()
-    model = Word2VecKeyedVectors.load("russian_database")
+    model = Word2VecKeyedVectors.load("../ml/russian_database")
     end_timer("Load rus database")
 
     db = DB()

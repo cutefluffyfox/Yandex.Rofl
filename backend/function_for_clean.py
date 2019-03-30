@@ -45,8 +45,8 @@ def tokenize_me(file_text):
                 data[i] = morph.parse(data[i])[0].normal_form
                 i += 1
 
-    def clear_str(text: str):
-        tokens = word_tokenize(text.lower())
+    def clear_str(txt: str):
+        tokens = word_tokenize(txt.lower())
         delete(tokens)
         return " ".join(tokens)
 
