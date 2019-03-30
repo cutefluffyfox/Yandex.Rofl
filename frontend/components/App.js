@@ -13,14 +13,22 @@ class App extends React.Component{
     this.state = {
       switch: 0,
       answer: [],
+      findString: ''
     }
     this.getResult = this.getResult.bind(this);
     this.changeRender = this.changeRender.bind(this);
+    this.getString = this.getString.bind(this);
   };
 
   getResult(parametr){
     this.setState({
       answer: parametr,
+    })
+  }
+
+  getString(str){
+    this.setState({
+      findString: str,
     })
   }
 
@@ -55,7 +63,8 @@ class App extends React.Component{
               paddingTop: "20px",
             }}
           >
-            <Find getResult={this.getResult}/>
+            <Find getResult={this.getResult} findString={this.state.findString}
+                  getString={this.getString}/>
             <Results data={this.state.answer } />
           </Col>
         </Row>;

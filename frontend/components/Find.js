@@ -5,14 +5,16 @@ class Find extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      findString: '',
+      findString: this.props.findString,
       isLoading: false,
+      getString: this.props.getString,
     }
     this.printFindString = this.printFindString.bind(this);
     this.sendSubmit = this.sendSubmit.bind(this);
   }
 
   printFindString(e){
+    this.state.getString(this.state.findString);
     this.setState({findString : e.target.value});
   }
 
@@ -68,6 +70,7 @@ class Find extends React.Component{
   }
 
   render(){
+    const main = this;
     let loading = (this.state.isLoading) ?
     <Spinner
       as="span"
@@ -81,10 +84,17 @@ class Find extends React.Component{
       <InputGroup className="mb-3">
         <FormControl
             onChange={this.printFindString}
+            value={this.state.findString}
             name="Find"
             placeholder="Название проблемы"
             aria-label="Recipient's username"
             aria-describedby="basic-addon2"
+            onKeyPress={ (event) => {
+              if(event.key == 'Enter'){
+                main.sendSubmit();
+              }
+              return false;
+            }}
           />
           <InputGroup.Append>
             <Button variant="outline-success"
