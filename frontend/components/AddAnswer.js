@@ -1,5 +1,5 @@
 import React from "react";
-import {InputGroup, FormControl, Button} from "react-bootstrap";
+import {InputGroup, FormControl, Button, Alert} from "react-bootstrap";
 
 class AddAnswer extends React.Component{
   constructor(props){
@@ -9,6 +9,7 @@ class AddAnswer extends React.Component{
       callback: '',
       reply: '',
       description: '',
+      textAlert: '',
     }
     this.sendSubmit = this.sendSubmit.bind(this);
   }
@@ -19,6 +20,9 @@ class AddAnswer extends React.Component{
        !this.state.callback.length ||
        !this.state.reply.length ||
        !this.state.description.length){
+         main.setState({textAlert:
+           "Одно из полей все еще пустое. Заполните его!"
+         })
          return;
        }
     else{
@@ -51,6 +55,7 @@ class AddAnswer extends React.Component{
        )
        .catch(
          function(err){
+           main.setState({textAlert: "Упссс... Проверьте подключение к интернету!"})
            console.log("Fetch Error :-s", err)
          });
       }
@@ -60,10 +65,10 @@ class AddAnswer extends React.Component{
 
   render(){
     return(
-    <div md={6}
+    <div md={8}
       style={{
         marginTop: "0px",
-        marginLeft: "20%",
+        marginLeft: "10%",
       }}
       >
       <InputGroup className="mb-3" style={{
@@ -122,7 +127,7 @@ class AddAnswer extends React.Component{
             }}
             style={{minHeight: "41px"}}
             aria-label="Default"
-            placeholder="Краткий ответ на проблему"
+            placeholder="Краткий ответ"
             aria-describedby="inputGroup-sizing"
           />
         </InputGroup>
@@ -144,12 +149,26 @@ class AddAnswer extends React.Component{
             aria-label="With textarea" />
         </InputGroup>
         <Button variant="primary" size="lg" block
-          style={{
-            height: "100%",
-          }}
+          style={{height: "100%"}}
           onClick={this.sendSubmit}>
             Отправить решение
         </Button>
+      </div>
+      <div
+          style={{
+              width: "80%",
+              marginTop: "10px",
+          }}
+        >
+        { (this.state.textAlert.length) ?
+        <Alert dismissible variant="danger"
+            onClick={() => {
+              this.setState({
+                textAlert: '',
+              })
+            }}>
+          <p>{this.state.textAlert}</p>
+          </Alert>: null}
       </div>
     </div>
   );

@@ -48,7 +48,7 @@ class App extends React.Component{
                  paddingTop: "20px",
                }}>
             <Find getResult={this.getResult}/>
-            <Results data={ this.state.answer } />
+            <Results data={this.state.answer } />
           </Col>
         </Row>;
         break;
