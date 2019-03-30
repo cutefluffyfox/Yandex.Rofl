@@ -1,5 +1,4 @@
 from passlib.hash import pbkdf2_sha256
-from json import dumps
 
 
 class DB:
@@ -64,7 +63,7 @@ class UsersTable:
         if row and pbkdf2_sha256.verify(password, row[-1]):
             answer = 'success'
 
-        return dumps(answer)
+        return answer
 
 
 class ProblemsTable:
@@ -217,25 +216,3 @@ def get_results(problems_id: list):
                     'problem_id': problem_id})
 
     return res
-
-#
-# def add_data_from_csv_to_clear(path):
-#     from pandas import read_csv
-#
-#     db = DB()
-#     clean_table = CleanTable(db.get_connection())
-#     clean_table.init_table()
-#
-#     excel = read_csv(path)
-#     case_nums = list(excel['Номер кейса'])
-#     descriptions = list(excel['clear_text'])
-#
-#     for _ in range(len(excel)):
-#         case_num = case_nums.pop(0)
-#         description = descriptions.pop(0)
-#
-#         if all(map(lambda x: type(x) != float, [case_num, description])):
-#             clean_table.insert(case_num, description, '')
-#             print(_)
-#
-# add_data_from_csv_to_clear('final_text.csv')
