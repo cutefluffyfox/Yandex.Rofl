@@ -35,9 +35,9 @@ def record():
     if request.method == 'POST':
         data = eval(request.data.decode('utf-8'))
 
-        if problem_table.get(data['id']):
+        if not problem_table.get(data['id']):
             problem_table.insert(data['id'],
-                                 data['callbacks'],
+                                 data['callback'],
                                  data['reply'],
                                  data['description'])
             answer = 'success'

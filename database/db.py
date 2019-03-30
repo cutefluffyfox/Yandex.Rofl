@@ -1,9 +1,10 @@
 from passlib.hash import pbkdf2_sha256
+from sqlite3 import connect
+from pandas import read_excel
 
 
 class DB:
     def __init__(self):
-        from sqlite3 import connect
         conn = connect('../database/crock.db', check_same_thread=False)
         self.conn = conn
 
@@ -181,7 +182,6 @@ class CleanTable:
 
 
 def add_data_from_excel(path):
-    from pandas import read_excel
     db = DB()
     problem_table = ProblemsTable(db.get_connection())
     problem_table.init_table()
