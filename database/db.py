@@ -132,33 +132,28 @@ class CleanTable:
                             (id INTEGER PRIMARY KEY AUTOINCREMENT,
                              problem_id VARCHAR(30),
                              description TEXT,
-                             vector TEXT
+                             vector BLOB
                              )''')
         cursor.close()
         self.connection.commit()
 
-    def insert(self, problem_id, description):
+    def insert(self, problem_id, description, vector):
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM clear WHERE problem_id = ?", (problem_id,))
         row = cursor.fetchone()
 
         if row is None:
             cursor.execute('''INSERT INTO clear 
-                            (problem_id, description) 
-                            VALUES (?,?)''', (problem_id, description))
+                            (problem_id, description, vector) 
+                            VALUES (?,?,?)''', (problem_id, description, vector))
 
         else:
             cursor.execute('''UPDATE clear
-                              SET description = ? 
-                              WHERE problem_id = ?''', (description, problem_id))
-        cursor.close()
-        self.connection.commit()
-
-    def add_vector(self, problem_id, vector: str):
-        cursor = self.connection.cursor()
-        cursor.execute('''UPDATE clear
-                          SET vector = ?
-                          WHERE problem_id = ?''', (vector, problem_id))
+                              SET description = ? ,
+                              vector = ?
+                              WHERE problem_id = ?''', (description,
+                                                        vector,
+                                                        problem_id))
         cursor.close()
         self.connection.commit()
 
@@ -190,7 +185,7 @@ class DataToCleaning:
         cursor.execute('''CREATE TABLE IF NOT EXISTS cleaning 
                             (id INTEGER PRIMARY KEY AUTOINCREMENT,
                              problem_id VARCHAR(30),
-                             description TEXT,
+                             description TEXT
                              )''')
         cursor.close()
         self.connection.commit()
@@ -258,3 +253,41 @@ def get_results(problems_id: list):
                     'problem_id': problem_id})
 
     return res
+
+#
+# def add_data_from_csv_to_clear(path):
+#     from pandas import read_csv
+#     import base64
+#
+#     db = DB()
+#     clean_table = CleanTable(db.get_connection())
+#     clean_table.init_table()
+#
+#     excel = read_csv(path)
+#     case_nums = list(excel['Номер кейса'])
+#     descriptions = list(excel['clear_text'])
+#
+#     for _ in range(len(excel)):
+#         case_num = case_nums.pop(0)
+#         description = descriptions.pop(0)
+#
+#         if all(map(lambda x: type(x) != float, [case_num, description])):
+#             if description:
+#                 vector = phrase_to_vector_to_str(description)
+#                 # print(vector)
+#                 # print(type(vector))
+#                 clean_table.insert(case_num, description, vector)
+#
+#             print(_)
+#
+#
+# from backend.cleaning import phrase_to_vector_to_str
+#
+# import base64
+#
+# db = DB()
+# clean_table = CleanTable(db.get_connection())
+# data = clean_table.get('SD1214250')
+# print(data[3])
+# print(data[3] == phrase_to_vector_to_str(data[2]))
+# add_data_from_csv_to_clear('final_text.csv')
