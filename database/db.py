@@ -143,12 +143,12 @@ class CleanTable:
         row = cursor.fetchone()
 
         if row is None:
-            cursor.execute('''INSERT INTO problems 
+            cursor.execute('''INSERT INTO clear 
                             (problem_id, description) 
                             VALUES (?,?)''', (problem_id, description))
 
         else:
-            cursor.execute('''UPDATE problems
+            cursor.execute('''UPDATE clear
                               SET description = ? 
                               WHERE problem_id = ?''', (description, problem_id))
         cursor.close()
@@ -156,9 +156,9 @@ class CleanTable:
 
     def add_vector(self, problem_id, vector: str):
         cursor = self.connection.cursor()
-        cursor.execute('''UPDATE problems
-                                      SET vector = ?
-                                      WHERE problem_id = ?''', (vector, problem_id))
+        cursor.execute('''UPDATE clear
+                          SET vector = ?
+                          WHERE problem_id = ?''', (vector, problem_id))
         cursor.close()
         self.connection.commit()
 
@@ -179,6 +179,48 @@ class CleanTable:
         cursor.execute('''DELETE FROM clear WHERE problem_id = ?''', (problem_id,))
         cursor.close()
         self.connection.commit()
+
+
+class DataToCleaning:
+    def __init__(self, connection):
+        self.connection = connection
+
+    def init_table(self):
+        cursor = self.connection.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS cleaning 
+                            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                             problem_id VARCHAR(30),
+                             description TEXT,
+                             )''')
+        cursor.close()
+        self.connection.commit()
+
+    def insert(self, problem_id, description):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM cleaning WHERE problem_id = ?", (problem_id,))
+        row = cursor.fetchone()
+
+        if row is None:
+            cursor.execute('''INSERT INTO cleaning 
+                            (problem_id, description) 
+                            VALUES (?,?)''', (problem_id, description))
+
+        else:
+            cursor.execute('''UPDATE cleaning
+                              SET description = ? 
+                              WHERE problem_id = ?''', (description, problem_id))
+        cursor.close()
+        self.connection.commit()
+
+    def get(self):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM cleaning WHERE id = 1")
+        row = cursor.fetchone()
+        if row:
+            cursor.execute('''DELETE FROM cleaning WHERE id = 1''')
+            cursor.close()
+            self.connection.commit()
+        return row
 
 
 def add_data_from_excel(path):
