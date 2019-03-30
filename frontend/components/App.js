@@ -30,6 +30,7 @@ class App extends React.Component{
     });
   }
   render(){
+
     let mainBlock = null;
     let errorModal = null;
 
@@ -72,7 +73,7 @@ class App extends React.Component{
 
     }
     return(
-      <Container style={{ height: '100%', width: "100%" }}>
+      <Container style={{ height: '100%', width: "100%" }} lenAnswer={this.state.answer.length}>
         <Row>
           <Col>
             <Navigation switchNavigation={this.changeRender}/>
