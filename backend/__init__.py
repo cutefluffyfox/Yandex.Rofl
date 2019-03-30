@@ -8,6 +8,7 @@ app = Flask(__name__, template_folder='../frontend', static_folder='../frontend'
 database = DB()
 problem_table = ProblemsTable(database.get_connection())
 users_table = UsersTable(database.get_connection())
+cleaning_table = DataToCleaning(database.get_connection())
 
 
 @app.route('/')
@@ -40,6 +41,8 @@ def record():
                                  data['callback'],
                                  data['reply'],
                                  data['description'])
+            cleaning_table.insert(data['id'],
+                                  data['description'])
             answer = 'success'
 
         else:
