@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request
-from backend.db import *
+from json import dumps
+from database.db import *
+from backend.function_for_clean import tokenize_me
+from ml.ml_code import ml
 
 app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
 
@@ -13,13 +16,18 @@ def index():
 @app.route('/Find', methods=['POST'])
 def find():
     if request.method == 'POST':
-        data = eval(request.data.decode('utf-8'))['searchValue']
-        # return get_result(Here ML is changing the data)
-        return get_results(['SD1213575',
-                            'SD1213532',
-                            'SD1213531',
-                            'SD1210912',
-                            'SD1210678'])
+        text = eval(request.data.decode('utf-8'))['searchValue']
+        # print(1)
+        text = tokenize_me(text)
+        # print(text)
+        res = ml(text)
+        # print(res)
+        return get_results(res)
+        # return dumps(get_results(['SD1213575',
+        #                           'SD1213532',
+        #                              'SD1213531',
+        #                           'SD1210912',
+        #                           'SD1210678']))
     return 'not post'
 
 
@@ -35,8 +43,12 @@ def record():
                                  data['callbacks'],
                                  data['reply'],
                                  data['description'])
-            return 'success'
-        return 'ID Error'
+            answer = 'success'
+
+        else:
+            answer = 'ID Error'
+
+        return dumps(answer)
 
 
 if __name__ == '__main__':
