@@ -9,7 +9,12 @@ class Navigation extends React.Component{
   render(){
     let mainNav =
       <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
-        <Navbar.Brand onClick={() => this.props.switchNavigation(0)}>
+        <Navbar.Brand
+            onClick={() => this.props.switchNavigation(0)}
+            style={{
+              cursor: "pointer",
+            }}
+          >
           CROC
         </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
