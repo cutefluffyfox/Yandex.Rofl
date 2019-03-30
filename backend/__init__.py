@@ -20,11 +20,12 @@ def index():
 @app.route('/Find', methods=['POST'])
 def find():
     if request.method == 'POST':
-        answer = get_results(ml(tokenize_me(
-            eval(
-                request.data.decode('utf-8')
-            )['searchValue'])))
+        data = eval(request.data.decode('utf-8'))
+        text = data[['searchValue']]
+        data = tokenize_me(text)
 
+        answer = {'answers': get_results(ml(data[0])),
+                  'deleted': data[1]}
     else:
         answer = 'not post'
 
@@ -67,6 +68,33 @@ def login():
         answer = 'This is tha gate to infinity'
 
     return dumps(answer)
+
+
+@app.route('/Register', methods=['POST'])
+def register():
+    if request.method == 'POST':
+        data = eval(request.data.decode('utf-8'))
+        pw = data['password']
+        log = data['login']
+        name = data['user_name']
+
+        if users_table.get(data['login']):
+            return dumps('Login Error')
+
+        if 6 < len(pw) < 32 and pw.isalnum():
+            users_table.insert(log, name, pw)
+            return dumps('success')
+
+        return dumps('Password Error')
+
+
+@app.route('/Check', methods=['POST'])
+def check_login():
+    data = eval(request.data.decode('utf-8'))
+
+    if users_table.get(data['login']):
+        return dumps('Login Error')
+    return dumps('success')
 
 
 if __name__ == '__main__':
