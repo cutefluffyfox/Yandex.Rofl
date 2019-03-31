@@ -4,7 +4,8 @@ import {Container, Row, Col, Button, InputGroup, FormControl, Navbar, Nav} from 
 class Navigation extends React.Component{
   constructor(props){
     super(props);
-  }
+    }
+
 
   render(){
     let mainNav =
@@ -23,7 +24,7 @@ class Navigation extends React.Component{
               </Nav>
               <Nav>
                 <Nav.Link onClick={() => this.props.switchNavigation(1)}>Добавить</Nav.Link>
-                <Nav.Link eventKey={2} onClick={() => this.props.switchNavigation(2)}>
+                <Nav.Link eventKey={2} onClick={() => this.props.getShowModal(true)}>
                   Авторизация
                 </Nav.Link>
               </Nav>

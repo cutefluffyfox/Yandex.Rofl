@@ -5,6 +5,7 @@ import Find from "./Find";
 import Results from "./Results";
 import AddAnswer from "./AddAnswer";
 import ErrorModal from "./ErrorModal";
+import Autorization from "./Autorization";
 
 class App extends React.Component{
 
@@ -13,11 +14,13 @@ class App extends React.Component{
     this.state = {
       switch: 0,
       answer: [],
-      findString: ''
+      findString: '',
+      showModal: false,
     }
     this.getResult = this.getResult.bind(this);
     this.changeRender = this.changeRender.bind(this);
     this.getString = this.getString.bind(this);
+    this.getShowModal = this.getShowModal.bind(this);
   };
 
   getResult(parametr){
@@ -37,6 +40,14 @@ class App extends React.Component{
       switch: num,
     });
   }
+
+  getShowModal(par){
+    this.setState({
+      showModal: par
+    })
+  }
+
+
   render(){
 
     let mainBlock = null;
@@ -85,11 +96,13 @@ class App extends React.Component{
       <Container style={{ height: '100%', width: "100%" }} lenAnswer={this.state.answer.length}>
         <Row>
           <Col>
-            <Navigation switchNavigation={this.changeRender}/>
+            <Navigation switchNavigation={this.changeRender}
+                        getShowModal={this.getShowModal}/>
           </Col>
         </Row>
           {mainBlock}
           {errorModal}
+          <Autorization showModal={this.state.showModal}/>
       </Container>
     );
   }
