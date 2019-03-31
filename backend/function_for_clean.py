@@ -4,7 +4,7 @@ import string
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 
-city_csv = read_csv('csv/city.csv')
+city_csv = read_csv('../backend/csv/city.csv')
 cities = list(city_csv['country_en'].apply(str))
 cities.extend(list(city_csv['region_en'].apply(str)))
 cities.extend(list(city_csv['city_en'].apply(str)))
@@ -14,14 +14,15 @@ cities.extend(list(city_csv['city'].apply(str)))
 cities.extend(['ул'])
 cities = list(set(map(str.lower, cities)))
 
-names = list(read_csv('csv/surnames.csv')['Surname'].apply(str))
-names.extend(list(read_csv('csv/rus_names.csv')['Name'].apply(str)))
-names.extend(list(read_csv('csv/for_names.csv')['name'].apply(str)))
+names = list(read_csv('../backend/csv/surnames.csv')['Surname'].apply(str))
+names.extend(list(read_csv('../backend/csv/rus_names.csv')['Name'].apply(str)))
+names.extend(list(read_csv('../backend/csv/for_names.csv')['name'].apply(str)))
 names = list(map(str.lower, names))
 
 
 def tokenize_me(file_text):
     def delete(data: list):
+        deleted_words = []
         morph = MorphAnalyzer()
         stop_words = stopwords.words('russian')
         stop_words.extend(['что', 'это', 'так', 'вот', 'быть', 'как', 'в', '—', 'к', 'на'])
@@ -32,31 +33,35 @@ def tokenize_me(file_text):
         while i < len(data):
             if data[i] in cities or data[i] in names or data[i] in stop_words:
                 if data[i] == 'ул' and i + 1 < len(data):
-                    data.pop(i + 1)
-                data.pop(i)
+                    deleted_words.append(data.pop(i + 1))
+                deleted_words.append(data.pop(i))
                 continue
 
             for letter in data[i]:
                 if letter not in alp:
-                    data.pop(i)
+                    deleted_words.append(data.pop(i))
                     break
 
             else:
                 data[i] = morph.parse(data[i])[0].normal_form
                 i += 1
 
+        return deleted_words
+
     def clear_str(txt: str):
         tokens = word_tokenize(txt.lower())
-        delete(tokens)
-        return " ".join(tokens)
+        deleted_words = delete(tokens)
+        return " ".join(tokens), deleted_words
 
-    if type(file_text) is str:
-        file_text = clear_str(file_text)
+    file_text, bad_words = clear_str(file_text)
 
-    elif '__iter__' in dir(file_text):
-        file_text = list(file_text)
+    return file_text, bad_words
 
-        for counter, text in enumerate(file_text):
-            file_text[counter] = clear_str(text)
 
-    return file_text
+def to_normal_form(file_text):
+    morph = MorphAnalyzer()
+    out = []
+    for word in word_tokenize(file_text.lower()):
+        if word.isalnum():
+            out.append(morph.parse(word)[0].normal_form)
+    return " ".join(out)

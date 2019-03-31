@@ -23,9 +23,11 @@ class UsersTable:
         cursor = self.connection.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS users 
                             (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                             login VARCHAR(25),
+                             login VARCHAR(25) UNIQUE,
                              user_name VARCHAR(30),
-                             password_hash VARCHAR(100)
+                             password_hash VARCHAR(100),
+                             status INTEGER DEFAULT 1,
+                             token VARCHAR(32)
                              )''')
         cursor.close()
         self.connection.commit()
@@ -38,15 +40,42 @@ class UsersTable:
         cursor.close()
         self.connection.commit()
 
+    def set_status(self, login, status):
+        cursor = self.connection.cursor()
+        cursor.execute('''UPDATE users 
+                          SET status = ?
+                          WHERE login = ?''', (status, login))
+        cursor.close()
+        self.connection.commit()
+
+    def set_token(self, login, token):
+        cursor = self.connection.cursor()
+        cursor.execute('''UPDATE users 
+                          SET token = ?
+                          WHERE login = ?''', (token, login))
+        cursor.close()
+        self.connection.commit()
+
+    def get_token(self, user_id):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT token FROM users WHERE id = ?", (user_id,))
+        row = cursor.fetchone()
+        return row
+
     def get(self, login):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE login = ?", (str(login),))
+        cursor.execute('''SELECT id,
+                          login,
+                          user_name,
+                          status,
+                          token
+                          FROM users WHERE login = ?''', (str(login),))
         row = cursor.fetchone()
         return row
 
     def get_all(self):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM users")
+        cursor.execute("SELECT login, status FROM users")
         rows = cursor.fetchall()
         return rows
 
@@ -61,7 +90,7 @@ class UsersTable:
         row = self.get(login)
         answer = 'error'
 
-        if row and pbkdf2_sha256.verify(password, row[-1]):
+        if row and pbkdf2_sha256.verify(password, row[3]):
             answer = 'success'
 
         return answer
@@ -132,33 +161,28 @@ class CleanTable:
                             (id INTEGER PRIMARY KEY AUTOINCREMENT,
                              problem_id VARCHAR(30),
                              description TEXT,
-                             vector TEXT
+                             vector BLOB
                              )''')
         cursor.close()
         self.connection.commit()
 
-    def insert(self, problem_id, description):
+    def insert(self, problem_id, description, vector):
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM clear WHERE problem_id = ?", (problem_id,))
         row = cursor.fetchone()
 
         if row is None:
             cursor.execute('''INSERT INTO clear 
-                            (problem_id, description) 
-                            VALUES (?,?)''', (problem_id, description))
+                            (problem_id, description, vector) 
+                            VALUES (?,?,?)''', (problem_id, description, vector))
 
         else:
             cursor.execute('''UPDATE clear
-                              SET description = ? 
-                              WHERE problem_id = ?''', (description, problem_id))
-        cursor.close()
-        self.connection.commit()
-
-    def add_vector(self, problem_id, vector: str):
-        cursor = self.connection.cursor()
-        cursor.execute('''UPDATE clear
-                          SET vector = ?
-                          WHERE problem_id = ?''', (vector, problem_id))
+                              SET description = ? ,
+                              vector = ?
+                              WHERE problem_id = ?''', (description,
+                                                        vector,
+                                                        problem_id))
         cursor.close()
         self.connection.commit()
 
@@ -190,7 +214,7 @@ class DataToCleaning:
         cursor.execute('''CREATE TABLE IF NOT EXISTS cleaning 
                             (id INTEGER PRIMARY KEY AUTOINCREMENT,
                              problem_id VARCHAR(30),
-                             description TEXT,
+                             description TEXT
                              )''')
         cursor.close()
         self.connection.commit()
@@ -221,6 +245,50 @@ class DataToCleaning:
             cursor.close()
             self.connection.commit()
         return row
+
+
+class StoryTable:
+    def __init__(self, connection):
+        self.connection = connection
+
+    def init_table(self):
+        cursor = self.connection.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS problems 
+                            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                             user_id INTEGER,
+                             text TEXT,
+                             date DATETIME
+                             )''')
+        cursor.close()
+        self.connection.commit()
+
+    def insert(self, user_id, text, datetime):
+        cursor = self.connection.cursor()
+
+        cursor.execute('''INSERT INTO stories
+                          (user_id, text, datetime) 
+                          VALUES (?,?,?)''', (user_id, text, datetime))
+
+        cursor.close()
+        self.connection.commit()
+
+    def get(self, user_id):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM stories WHERE user_id = ?", (user_id,))
+        row = cursor.fetchone()
+        return row
+
+    def get_all(self):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM stories")
+        rows = cursor.fetchall()
+        return rows
+
+    def delete(self, user_id):
+        cursor = self.connection.cursor()
+        cursor.execute('''DELETE FROM stories WHERE user_id = ?''', (user_id,))
+        cursor.close()
+        self.connection.commit()
 
 
 def add_data_from_excel(path):
@@ -258,3 +326,45 @@ def get_results(problems_id: list):
                     'problem_id': problem_id})
 
     return res
+
+#
+# def add_data_from_csv_to_clear(path):
+#     from pandas import read_csv
+#
+#     db = DB()
+#     clean_table = CleanTable(db.get_connection())
+#     clean_table.init_table()
+#
+#     excel = read_csv(path)
+#     case_nums = list(excel['Номер кейса'])
+#     descriptions = list(excel['clear_text'])
+#
+#     for _ in range(len(excel)):
+#         case_num = case_nums.pop(0)
+#         description = descriptions.pop(0)
+#
+#         if all(map(lambda x: type(x) != float, [case_num, description])):
+#             if description:
+#                 vector = phrase_to_vector_to_str(description)
+#                 # print(vector)
+#                 # print(type(vector))
+#                 clean_table.insert(case_num, description, vector)
+#
+#             print(_)
+#
+#
+# from backend.cleaning import phrase_to_vector_to_str
+#
+# db = DB()
+# clean_table = CleanTable(db.get_connection())
+# data = clean_table.get('SD1193001')
+# print(data[2])
+# print(phrase_to_vector_to_str(data[2]))
+# print(data[3])
+# print(data[3] == phrase_to_vector_to_str(data[2]))
+# add_data_from_csv_to_clear('final_text.csv')
+# usr_table = UsersTable(db.get_connection())
+# usr_table.init_table()
+# usr_table.insert('REnard', 'renard', 'password1234')
+# usr_table.set_status('REnard', 3)
+# print(usr_table.check_password('REnard', 'password1234'))
