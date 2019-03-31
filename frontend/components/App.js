@@ -21,6 +21,7 @@ class App extends React.Component{
     this.changeRender = this.changeRender.bind(this);
     this.getString = this.getString.bind(this);
     this.getShowModal = this.getShowModal.bind(this);
+    this.closeWindow = this.closeWindow.bind(this);
   };
 
   getResult(parametr){
@@ -39,6 +40,12 @@ class App extends React.Component{
     this.setState({
       switch: num,
     });
+  }
+
+  closeWindow(){
+    this.setState({
+      showModal: false,
+    })
   }
 
   getShowModal(par){
@@ -102,7 +109,7 @@ class App extends React.Component{
         </Row>
           {mainBlock}
           {errorModal}
-          <Autorization showModal={this.state.showModal}/>
+          <Autorization showModal={this.state.showModal} closeWindow={this.closeWindow}/>
       </Container>
     );
   }
