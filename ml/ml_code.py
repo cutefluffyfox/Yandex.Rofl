@@ -4,6 +4,7 @@ from pymorphy2 import MorphAnalyzer
 from time import time
 from gensim.models.keyedvectors import Word2VecKeyedVectors
 import numpy
+from random import shuffle
 
 """
 МЫ НЕ ГАРАНТИРУЕМ, ЧТО ЭТО РАБОТАЕТ
@@ -54,8 +55,19 @@ def ml(phrase: str) -> list:
     data = clean_table.get_all()
 
     minn = []
-    main_vector = sum([model[f"{word}_{word_type(word)}"] if f"{word}_{word_type(word)}" in model.vocab
-                       else 0 for word in phrase.split()]).reshape(1, -1)
+    try:
+        main_vector = sum([model[f"{word}_{word_type(word)}"] if f"{word}_{word_type(word)}" in model.vocab
+                           else 0 for word in phrase.split()]).reshape(1, -1)
+    except AttributeError:
+        main_text = set(phrase.split())
+        out = []
+        start_timer()
+        for stroke in data:
+            if len(set(stroke[2].split()) & main_text) >= len(main_text) // 3 + 1:
+                out.append(stroke[1])
+        end_timer("ERROR: All data found")
+        shuffle(out)
+        return out[:10]
 
     start_timer()
     for stroke in data:
@@ -77,3 +89,6 @@ def ml(phrase: str) -> list:
         out.append(data[-1])
     out.reverse()
     return out
+
+
+print(ml("гей"))
