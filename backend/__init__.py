@@ -3,6 +3,7 @@ from json import dumps
 from database.db import *
 from backend.function_for_clean import tokenize_me
 from ml.ml_code import ml
+from sqlite3 import IntegrityError
 
 app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
 database = DB()
@@ -82,8 +83,12 @@ def register():
             return dumps('Login Error')
 
         if 6 < len(pw) < 32 and pw.isalnum():
-            users_table.insert(log, name, pw)
-            return dumps('success')
+            try:
+                users_table.insert(log, name, pw)
+                return dumps('success')
+
+            except IntegrityError:
+                return dumps('Password Error')
 
         return dumps('Password Error')
 

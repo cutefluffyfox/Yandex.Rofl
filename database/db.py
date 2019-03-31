@@ -23,7 +23,7 @@ class UsersTable:
         cursor = self.connection.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS users 
                             (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                             login VARCHAR(25),
+                             login VARCHAR(25) UNIQUE,
                              user_name VARCHAR(30),
                              password_hash VARCHAR(100),
                              status INTEGER DEFAULT 1
@@ -36,6 +36,14 @@ class UsersTable:
         cursor.execute('''INSERT INTO users 
                           (login, user_name, password_hash) 
                           VALUES (?,?,?)''', (login, user_name, pbkdf2_sha256.hash(password)))
+        cursor.close()
+        self.connection.commit()
+
+    def set_status(self, login, status):
+        cursor = self.connection.cursor()
+        cursor.execute('''UPDATE users 
+                          SET status = ?
+                          WHERE login = ?''', (status, login))
         cursor.close()
         self.connection.commit()
 
@@ -283,7 +291,7 @@ def get_results(problems_id: list):
 #
 # from backend.cleaning import phrase_to_vector_to_str
 #
-# db = DB()
+db = DB()
 # clean_table = CleanTable(db.get_connection())
 # data = clean_table.get('SD1193001')
 # print(data[2])
@@ -291,8 +299,8 @@ def get_results(problems_id: list):
 # print(data[3])
 # print(data[3] == phrase_to_vector_to_str(data[2]))
 # add_data_from_csv_to_clear('final_text.csv')
-# usr_table = UsersTable(db.get_connection())
+usr_table = UsersTable(db.get_connection())
 # usr_table.init_table()
-# usr_table.insert('REnard', 'renard', 'password1234')
-#
+usr_table.insert('REnard', 'renard', 'password1234')
+# usr_table.set_status('REnard', 3)
 # print(usr_table.check_password('REnard', 'password1234'))
