@@ -8,9 +8,16 @@ class Find extends React.Component{
       findString: this.props.findString,
       isLoading: false,
       getString: this.props.getString,
+      idUser: this.props.idUser,
     }
     this.printFindString = this.printFindString.bind(this);
     this.sendSubmit = this.sendSubmit.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      idUser: nextProps.idUser,
+    })
   }
 
   printFindString(e){
@@ -40,6 +47,7 @@ class Find extends React.Component{
             body: JSON.stringify({
              "searchValue": letter,
              "datetime": new Date(),
+             "idUser": main.state.idUser,
             }),
           })
           .then(
@@ -56,7 +64,7 @@ class Find extends React.Component{
             response.json()
             .then(function(data) {
               console.log(data);
-              main.props.getResult(data);
+              (data != []) ? main.props.getResult(data.answers) : main.props.getResult(data) 
             });
           }
         )

@@ -16,6 +16,13 @@ class App extends React.Component{
       answer: [],
       findString: '',
       showModal: false,
+      user: {
+        id: -1,
+        name: null,
+        login: null,
+        status: null,
+        token: null,
+      }
     }
     this.getResult = this.getResult.bind(this);
     this.changeRender = this.changeRender.bind(this);
@@ -82,8 +89,9 @@ class App extends React.Component{
             }}
           >
             <Find getResult={this.getResult} findString={this.state.findString}
-                  getString={this.getString}/>
-            <Results data={this.state.answer } />
+                  getString={this.getString}
+                  idUser={this.state.user.id}/>
+            <Results data={this.state.answer} />
           </Col>
         </Row>;
         break;
