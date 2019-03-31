@@ -26,7 +26,8 @@ class UsersTable:
                              login VARCHAR(25) UNIQUE,
                              user_name VARCHAR(30),
                              password_hash VARCHAR(100),
-                             status INTEGER DEFAULT 1
+                             status INTEGER DEFAULT 1,
+                             token VARCHAR(32)
                              )''')
         cursor.close()
         self.connection.commit()
@@ -47,15 +48,34 @@ class UsersTable:
         cursor.close()
         self.connection.commit()
 
+    def set_token(self, login, token):
+        cursor = self.connection.cursor()
+        cursor.execute('''UPDATE users 
+                          SET token = ?
+                          WHERE login = ?''', (token, login))
+        cursor.close()
+        self.connection.commit()
+
+    def get_token(self, user_id):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT token FROM users WHERE id = ?", (user_id,))
+        row = cursor.fetchone()
+        return row
+
     def get(self, login):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE login = ?", (str(login),))
+        cursor.execute('''SELECT id,
+                          login,
+                          user_name,
+                          status,
+                          token
+                          FROM users WHERE login = ?''', (str(login),))
         row = cursor.fetchone()
         return row
 
     def get_all(self):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM users")
+        cursor.execute("SELECT login, status FROM users")
         rows = cursor.fetchall()
         return rows
 
@@ -227,6 +247,50 @@ class DataToCleaning:
         return row
 
 
+class StoryTable:
+    def __init__(self, connection):
+        self.connection = connection
+
+    def init_table(self):
+        cursor = self.connection.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS problems 
+                            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                             user_id INTEGER,
+                             text TEXT,
+                             date DATETIME
+                             )''')
+        cursor.close()
+        self.connection.commit()
+
+    def insert(self, user_id, text, datetime):
+        cursor = self.connection.cursor()
+
+        cursor.execute('''INSERT INTO stories
+                          (user_id, text, datetime) 
+                          VALUES (?,?,?)''', (user_id, text, datetime))
+
+        cursor.close()
+        self.connection.commit()
+
+    def get(self, user_id):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM stories WHERE user_id = ?", (user_id,))
+        row = cursor.fetchone()
+        return row
+
+    def get_all(self):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM stories")
+        rows = cursor.fetchall()
+        return rows
+
+    def delete(self, user_id):
+        cursor = self.connection.cursor()
+        cursor.execute('''DELETE FROM stories WHERE user_id = ?''', (user_id,))
+        cursor.close()
+        self.connection.commit()
+
+
 def add_data_from_excel(path):
     db = DB()
     problem_table = ProblemsTable(db.get_connection())
@@ -291,7 +355,7 @@ def get_results(problems_id: list):
 #
 # from backend.cleaning import phrase_to_vector_to_str
 #
-db = DB()
+# db = DB()
 # clean_table = CleanTable(db.get_connection())
 # data = clean_table.get('SD1193001')
 # print(data[2])
@@ -299,8 +363,8 @@ db = DB()
 # print(data[3])
 # print(data[3] == phrase_to_vector_to_str(data[2]))
 # add_data_from_csv_to_clear('final_text.csv')
-usr_table = UsersTable(db.get_connection())
+# usr_table = UsersTable(db.get_connection())
 # usr_table.init_table()
-usr_table.insert('REnard', 'renard', 'password1234')
+# usr_table.insert('REnard', 'renard', 'password1234')
 # usr_table.set_status('REnard', 3)
 # print(usr_table.check_password('REnard', 'password1234'))
