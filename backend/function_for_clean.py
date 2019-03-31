@@ -56,3 +56,12 @@ def tokenize_me(file_text):
     file_text, bad_words = clear_str(file_text)
 
     return file_text, bad_words
+
+
+def to_normal_form(file_text):
+    morph = MorphAnalyzer()
+    out = []
+    for word in word_tokenize(file_text.lower()):
+        if word.isalnum():
+            out.append(morph.parse(word)[0].normal_form)
+    return " ".join(out)

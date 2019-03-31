@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from json import dumps
 from database.db import *
-from backend.function_for_clean import tokenize_me
+from backend.function_for_clean import to_normal_form
 from ml.ml_code import ml
 from sqlite3 import IntegrityError
 
@@ -23,7 +23,7 @@ def find():
     if request.method == 'POST':
         data = eval(request.data.decode('utf-8'))
         text = data[['searchValue']]
-        data = tokenize_me(text)
+        data = to_normal_form(text)
 
         answer = {'answers': get_results(ml(data[0])),
                   'deleted': data[1]}
