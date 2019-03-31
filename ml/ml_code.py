@@ -3,6 +3,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from pymorphy2 import MorphAnalyzer
 from time import time
 from gensim.models.keyedvectors import Word2VecKeyedVectors
+import numpy
 
 """
 МЫ НЕ ГАРАНТИРУЕМ, ЧТО ЭТО РАБОТАЕТ
@@ -13,7 +14,6 @@ from gensim.models.keyedvectors import Word2VecKeyedVectors
 
 
 def ml(phrase: str) -> list:
-
     """
     Получает на вход строку с 'красивыми' данными разделённые пробелами, делает анализ запроса и возращает
     список топ-5 (от наиболее похожих до наименее похожих) номеров ошибок.
@@ -28,10 +28,17 @@ def ml(phrase: str) -> list:
         return str(morph.parse(word)[0].tag).split(",")[0]
 
     def start_timer():
+        """
+        Начало таймера для проверки скорости работы определнного блока кода
+        """
         global start
         start = time()
 
     def end_timer(text: str):
+        """
+        Конец таймера для проверки скорости работы определённого блока кода
+        (Выводит в консоль)
+        """
         global start
         print("-----------------------------")
         print(time() - start)
@@ -46,42 +53,27 @@ def ml(phrase: str) -> list:
     clean_table = CleanTable(db.get_connection())
     data = clean_table.get_all()
 
-    answers = []
-    was = []
-
-    for _ in data:
-        answers.append(_[1])
-        was.append(_[2])
+    minn = []
+    main_vector = sum([model[f"{word}_{word_type(word)}"] if f"{word}_{word_type(word)}" in model.vocab
+                       else 0 for word in phrase.split()]).reshape(1, -1)
 
     start_timer()
-    vec = sum([model[f"{word}_{word_type(word)}"] if f"{word}_{word_type(word)}" in model.vocab
-               else 0 for word in phrase.split()]).reshape(1, -1)
-    minn = []
-    i = 0
-    for phrase in was:
+    for stroke in data:
         try:
-            this = (cosine_similarity(sum([model[f"{word}_{word_type(word)}"]
-                                           if f"{word}_{word_type(word)}" in model.vocab
-                                           else 0
-                                           for word in phrase.split()]).reshape(1, -1),
-                                      vec), i, phrase, answers[i])
+            this_vector = [numpy.frombuffer(stroke[3], dtype=numpy.float32)]
+            this = (cosine_similarity(this_vector, main_vector), stroke[1])
             if len(minn) < 5:
                 minn.append(this)
             elif minn[0][0][0] < this[0][0]:
                 minn.append(this)
-                minn = sorted(minn, key=lambda a: a[0][0])
-                minn = minn[1:]
+                minn = sorted(minn, key=lambda a: a[0][0])[1:]
         except AttributeError:
             pass
-        i += 1
+        except ValueError:
+            pass
     end_timer("Words -> vec -> top 5")
-    start_timer()
     out = []
     for data in minn:
         out.append(data[-1])
     out.reverse()
-    end_timer("Reverse")
     return out
-#
-#
-# print(ml("кот собака"))
