@@ -25,7 +25,8 @@ class UsersTable:
                             (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                              login VARCHAR(25),
                              user_name VARCHAR(30),
-                             password_hash VARCHAR(100)
+                             password_hash VARCHAR(100),
+                             status INTEGER DEFAULT 1
                              )''')
         cursor.close()
         self.connection.commit()
@@ -61,7 +62,7 @@ class UsersTable:
         row = self.get(login)
         answer = 'error'
 
-        if row and pbkdf2_sha256.verify(password, row[-1]):
+        if row and pbkdf2_sha256.verify(password, row[3]):
             answer = 'success'
 
         return answer
@@ -257,7 +258,6 @@ def get_results(problems_id: list):
 #
 # def add_data_from_csv_to_clear(path):
 #     from pandas import read_csv
-#     import base64
 #
 #     db = DB()
 #     clean_table = CleanTable(db.get_connection())
@@ -283,11 +283,16 @@ def get_results(problems_id: list):
 #
 # from backend.cleaning import phrase_to_vector_to_str
 #
-# import base64
-#
 # db = DB()
 # clean_table = CleanTable(db.get_connection())
-# data = clean_table.get('SD1214250')
+# data = clean_table.get('SD1193001')
+# print(data[2])
+# print(phrase_to_vector_to_str(data[2]))
 # print(data[3])
 # print(data[3] == phrase_to_vector_to_str(data[2]))
 # add_data_from_csv_to_clear('final_text.csv')
+# usr_table = UsersTable(db.get_connection())
+# usr_table.init_table()
+# usr_table.insert('REnard', 'renard', 'password1234')
+#
+# print(usr_table.check_password('REnard', 'password1234'))
