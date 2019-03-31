@@ -253,7 +253,7 @@ class StoryTable:
 
     def init_table(self):
         cursor = self.connection.cursor()
-        cursor.execute('''CREATE TABLE IF NOT EXISTS problems 
+        cursor.execute('''CREATE TABLE IF NOT EXISTS stories 
                             (id INTEGER PRIMARY KEY AUTOINCREMENT,
                              user_id INTEGER,
                              text TEXT,
