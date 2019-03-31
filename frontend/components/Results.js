@@ -14,7 +14,7 @@ class Results extends React.Component{
 
   componentWillReceiveProps(nextProps){
     this.setState({
-      answer: nextProps.data,
+      data: nextProps.data,
     })
   }
 

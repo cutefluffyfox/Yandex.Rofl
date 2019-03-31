@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request
 from json import dumps
-from database.db import *
-from backend.function_for_clean import to_normal_form
-from ml.ml_code import ml
+from db import *
+from function_for_clean import tokenize_me
+from ml_code import ml
 from sqlite3 import IntegrityError
 from random import choice
 from string import ascii_lowercase, ascii_uppercase, digits
@@ -28,7 +28,7 @@ def find():
         text = data['searchValue']
         usr_id = int(data['idUser'])
         date = data['datetime']
-        data = to_normal_form(text)
+        data = tokenize_me(text)
 
         answer = {'answers': get_results(ml(data[0])),
                   'deleted': data[1]}
