@@ -73,7 +73,9 @@ class App extends React.Component{
         <Row style={{
           marginTop: (this.state.answer.length) ? "0%" : "15%",
         }}>
-          <Col md={{ span: 4, offset: 4 }}>
+          <Col md={{ span: 4, offset: 4 }}
+              sm={12}
+              xs={12}>
             { (this.state.answer.length) ? null
               : <Image
                   src="frontend/image/Croc_logo_eng_RGB.png"
@@ -84,6 +86,8 @@ class App extends React.Component{
           </Col>
           <Col
             md={12}
+            sm={12}
+            xs={12}
             style={{
               paddingTop: "20px",
             }}
@@ -98,7 +102,11 @@ class App extends React.Component{
       case 1:
         mainBlock =
           <Row style={{paddingTop: "10%"}}>
-            <Col>
+            <Col
+              md={12}
+              sm={12}
+              xs={12}
+              >
               <AddAnswer/>
             </Col>
           </Row>
@@ -110,7 +118,11 @@ class App extends React.Component{
     return(
       <Container style={{ height: '100%', width: "100%" }} lenAnswer={this.state.answer.length}>
         <Row>
-          <Col>
+          <Col
+            md={12}
+            sm={12}
+            xs={12}
+            >
             <Navigation switchNavigation={this.changeRender}
                         getShowModal={this.getShowModal}/>
           </Col>

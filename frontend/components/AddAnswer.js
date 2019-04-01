@@ -10,6 +10,7 @@ class AddAnswer extends React.Component{
       reply: '',
       description: '',
       textAlert: '',
+      isLoading: false,
     }
     this.sendSubmit = this.sendSubmit.bind(this);
   }
@@ -44,6 +45,7 @@ class AddAnswer extends React.Component{
       .then(
         function(response){
           if(response.status != 200){
+            main.setState({textAlert: "Упссс... Проверьте подключение к интернету!"})
             console.log("Status Code:" + response.status);
             return
           }
