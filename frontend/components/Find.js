@@ -5,14 +5,23 @@ class Find extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      findString: '',
+      findString: this.props.findString,
       isLoading: false,
+      getString: this.props.getString,
+      idUser: this.props.idUser,
     }
     this.printFindString = this.printFindString.bind(this);
     this.sendSubmit = this.sendSubmit.bind(this);
   }
 
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      idUser: nextProps.idUser,
+    })
+  }
+
   printFindString(e){
+    this.state.getString(this.state.findString);
     this.setState({findString : e.target.value});
   }
 
@@ -36,7 +45,9 @@ class Find extends React.Component{
               "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
             },
             body: JSON.stringify({
-             "searchValue": letter
+             "searchValue": letter,
+             "datetime": new Date(),
+             "idUser": main.state.idUser,
             }),
           })
           .then(
@@ -53,7 +64,7 @@ class Find extends React.Component{
             response.json()
             .then(function(data) {
               console.log(data);
-              main.props.getResult(data);
+              (data != []) ? main.props.getResult(data.answers) : main.props.getResult(data) 
             });
           }
         )
@@ -68,6 +79,7 @@ class Find extends React.Component{
   }
 
   render(){
+    const main = this;
     let loading = (this.state.isLoading) ?
     <Spinner
       as="span"
@@ -81,10 +93,17 @@ class Find extends React.Component{
       <InputGroup className="mb-3">
         <FormControl
             onChange={this.printFindString}
+            value={this.state.findString}
             name="Find"
             placeholder="Название проблемы"
             aria-label="Recipient's username"
             aria-describedby="basic-addon2"
+            onKeyPress={ (event) => {
+              if(event.key == 'Enter'){
+                main.sendSubmit();
+              }
+              return false;
+            }}
           />
           <InputGroup.Append>
             <Button variant="outline-success"

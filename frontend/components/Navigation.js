@@ -4,12 +4,18 @@ import {Container, Row, Col, Button, InputGroup, FormControl, Navbar, Nav} from 
 class Navigation extends React.Component{
   constructor(props){
     super(props);
-  }
+    }
+
 
   render(){
     let mainNav =
       <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
-        <Navbar.Brand onClick={() => this.props.switchNavigation(0)}>
+        <Navbar.Brand
+            onClick={() => this.props.switchNavigation(0)}
+            style={{
+              cursor: "pointer",
+            }}
+          >
           CROC
         </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -18,7 +24,7 @@ class Navigation extends React.Component{
               </Nav>
               <Nav>
                 <Nav.Link onClick={() => this.props.switchNavigation(1)}>Добавить</Nav.Link>
-                <Nav.Link eventKey={2} onClick={() => this.props.switchNavigation(2)}>
+                <Nav.Link eventKey={2} onClick={() => this.props.getShowModal(true)}>
                   Авторизация
                 </Nav.Link>
               </Nav>

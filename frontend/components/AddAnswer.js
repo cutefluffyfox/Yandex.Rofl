@@ -20,8 +20,8 @@ class AddAnswer extends React.Component{
        !this.state.callback.length ||
        !this.state.reply.length ||
        !this.state.description.length){
-         main.setState({textAlert:
-           "Одно из полей все еще пустое. Заполните его!"
+         main.setState({
+           textAlert: "Одно из полей все еще пустое. Заполните его!",
          })
          return;
        }
@@ -70,12 +70,15 @@ class AddAnswer extends React.Component{
         marginTop: "0px",
         marginLeft: "10%",
       }}
+    >
+      <InputGroup
+        className="mb-3"
+        style={{
+          width: "50%",
+          minWidth: "100px",
+          minHeight: "32px",
+        }}
       >
-      <InputGroup className="mb-3" style={{
-            width: "50%",
-            minWidth: "100px",
-            minHeight: "32px",
-      }}>
         <InputGroup.Prepend>
           <InputGroup.Text id="inputGroup-sizing-default">ID</InputGroup.Text>
         </InputGroup.Prepend>
@@ -91,7 +94,7 @@ class AddAnswer extends React.Component{
           aria-label="Default"
           placeholder="Номер id"
           aria-describedby="inputGroup-sizing"
-          />
+        />
       </InputGroup>
       <div style={{
           width: "80%",
