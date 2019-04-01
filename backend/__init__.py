@@ -13,6 +13,7 @@ problem_table = ProblemsTable(database.get_connection())
 users_table = UsersTable(database.get_connection())
 cleaning_table = CleaningTable(database.get_connection())
 story_table = StoryTable(database.get_connection())
+search_total = 0
 
 
 @app.route('/')
@@ -23,18 +24,32 @@ def index():
 
 @app.route('/Find', methods=['POST'])
 def find():
+    global search_total
     if request.method == 'POST':
-        data = eval(request.data.decode('utf-8'))
-        text = data['searchValue']
-        usr_id = int(data['idUser'])
-        date = int(data['datetime'])
-        data = tokenize_me(text)
+        if search_total > 2:
+            answer = {
+                'errors': 'server is busy',
+                'answers': None,
+                'deleted': None
+            }
+            print(search_total)
 
-        answer = {'answers': tokenize_me(get_results(ml(data[0])), clean=False),
-                  'deleted': data[1]}
+        else:
+            search_total += 1
+            data = eval(request.data.decode('utf-8'))
+            text = data['searchValue']
+            usr_id = int(data['idUser'])
+            date = int(data['datetime'])
+            data = tokenize_me(text)
+            answer = {
+                'errors': None,
+                'answers': tokenize_me(get_results(ml(data[0])), clean=False),
+                'deleted': data[1]
+            }
+            search_total -= 1
 
-        if usr_id != -1:
-            story_table.insert(usr_id, text, date)
+            if usr_id != -1:
+                story_table.insert(usr_id, text, date)
 
     else:
         answer = 'not post'
@@ -105,7 +120,7 @@ def register():
         if users_table.get(data['login']):
             return dumps('Login Error')
 
-        if 6 < len(pw) < 32 and pw.isalnum() and not(pw.isdigit() or pw.isalpha()):
+        if 6 < len(pw) < 32 and pw.isalnum() and not (pw.isdigit() or pw.isalpha()):
             try:
                 users_table.insert(log, name, pw)
                 return dumps('success')

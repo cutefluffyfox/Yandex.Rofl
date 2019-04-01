@@ -238,5 +238,9 @@ class TestRegistration(unittest.TestCase):
         self.assertEqual(answer, 'Login Error')
 
 
+class TestAddingProblem(unittest.TestCase):
+    pass
+
+
 if __name__ == '__main__':
     unittest.main()
