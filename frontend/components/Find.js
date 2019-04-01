@@ -64,7 +64,7 @@ class Find extends React.Component{
             response.json()
             .then(function(data) {
               console.log(data);
-              (data != []) ? main.props.getResult(data.answers) : main.props.getResult(data) 
+              (data != []) ? main.props.getResult(data.answers) : main.props.getResult(data)
             });
           }
         )

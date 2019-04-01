@@ -7,7 +7,23 @@ class Autorization extends React.Component{
     super(props);
     this.state = {
       showModal: this.props.showModal,
+      enter: {
+        login: '',
+        password: '',
+      },
+      registration: {
+        login: '',
+        password: '',
+        reppassword: '',
+        user_name: ''
+      },
+      textAlert: '',
+      variant: "danger",
     }
+    this.enter = this.enter.bind(this);
+    this.writeDataRegistration = this.writeDataRegistration.bind(this);
+    this.writeDataLogin = this.writeDataLogin.bind(this);
+    this.registration = this.registration.bind(this);
   }
 
   componentWillReceiveProps(nextProps){
@@ -16,7 +32,117 @@ class Autorization extends React.Component{
     })
   }
 
+  registration(){
+    let login = this.state.registration.login;
+    let password = this.state.registration.password;
+    let user_name = this.state.registration.user_name
+    const main = this;
+
+
+    fetch('/Find',
+    {
+      method: 'post',
+      headers: {
+        'Content-Type':'application/json',
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+      },
+      body: JSON.stringify({
+       "login": login,
+       "password": password,
+       "user_name": user_name,
+      }),
+    })
+    .then(
+    function(response) {
+      if (response.status !== 200) {
+        console.log('Status Code: ' +
+          response.status);
+        return;
+      }
+      // Examine the text in the response
+      response.json()
+      .then(function(data) {
+        console.log(data);
+      });
+    }
+  )
+  .catch(
+    function(err) {
+      console.log('Fetch Error :-S', err);
+    });
+  }
+
+  enter(){
+    let login = this.state.enter.login;
+    let password = this.state.enter.password;
+    const main = this;
+
+
+    fetch('/Find',
+    {
+      method: 'post',
+      headers: {
+        'Content-Type':'application/json',
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+      },
+      body: JSON.stringify({
+       "login": login,
+       "password": password,
+      }),
+    })
+    .then(
+    function(response) {
+      if (response.status !== 200) {
+        console.log('Status Code: ' +
+          response.status);
+        return;
+      }
+      // Examine the text in the response
+      response.json()
+      .then(function(data) {
+        console.log(data);
+      });
+    }
+  )
+  .catch(
+    function(err) {
+      console.log('Fetch Error :-S', err);
+    });
+  }
+
+  writeDataRegistration(first, second){
+      this.setState({
+        registration: {
+          ...this.state.registration,
+          [second]: first.target.value,
+        }
+    })
+  }
+
+  writeDataLogin(first, second){
+      this.setState({
+        enter: {
+          ...this.state.enter,
+          [second]: first.target.value,
+        }
+    })
+  }
+
   render(){
+
+    let modalAlert =
+    (this.state.textAlert.length) ?
+    <Alert dismissible variant="danger"
+        onClick={() => {
+          this.setState({
+            textAlert: '',
+          })
+        }}>
+      <p>{this.state.textAlert}</p>
+      </Alert>: null;
+
     return(
       <Modal
         onHide={this.props.closeWindow}
@@ -36,10 +162,11 @@ class Autorization extends React.Component{
         <Modal.Body>
           <Container>
             <Row>
-              <Col md={12} lg={6} style={{paddingBottom: "20px"}}>
+              <Col md={12} lg={6} xs={12} style={{paddingBottom: "20px"}}>
                 <h5>Регистрация</h5>
                 <InputGroup className="mb-3">
                   <FormControl
+                    onChange={(e) => this.writeDataRegistration(e, 'user_name')}
                     placeholder="ФИО"
                     aria-label="Username"
                     aria-describedby="basic-addon1"
@@ -47,6 +174,7 @@ class Autorization extends React.Component{
                 </InputGroup>
                 <InputGroup className="mb-3">
                   <FormControl
+                    onChange={(e) => this.writeDataRegistration(e, 'login')}
                     placeholder="Логин"
                     aria-label="Username"
                     aria-describedby="basic-addon1"
@@ -54,6 +182,7 @@ class Autorization extends React.Component{
                 </InputGroup>
                 <InputGroup className="mb-3">
                   <FormControl
+                    onChange={(e) => this.writeDataRegistration(e, 'password')}
                     placeholder="Пароль"
                     aria-label="Username"
                     aria-describedby="basic-addon1"
@@ -61,19 +190,23 @@ class Autorization extends React.Component{
                 </InputGroup>
                 <InputGroup className="mb-3">
                   <FormControl
+                    onChange={(e) => this.writeDataRegistration(e, 'reppassword')}
                     placeholder="Подтверждение пароля"
                     aria-label="Username"
                     aria-describedby="basic-addon1"
                   />
                 </InputGroup>
                 <Button
+                    onClick={this.registration}
                     variant="outline-dark"
                 >Зарегистрироваться</Button>
+
               </Col>
-              <Col md={12} lg={6}>
+              <Col md={12} lg={6} xs={6}>
                 <h5>Вход</h5>
                 <InputGroup className="mb-3">
                   <FormControl
+                    onChange={(e) => this.writeDataLogin(e, 'login')}
                     placeholder="Логин"
                     aria-label="Username"
                     aria-describedby="basic-addon1"
@@ -81,6 +214,7 @@ class Autorization extends React.Component{
                 </InputGroup>
                 <InputGroup className="mb-3">
                   <FormControl
+                    onChange={(e) => this.writeDataLogin(e, 'password')}
                     type="password"
                     placeholder="Пароль"
                     aria-label="Username"
@@ -88,6 +222,7 @@ class Autorization extends React.Component{
                   />
                 </InputGroup>
                 <Button
+                    onClick={this.enter}
                     style={{
                       marginLeft: "80%"
                     }}
