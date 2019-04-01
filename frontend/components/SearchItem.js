@@ -10,6 +10,16 @@ class SearchItem extends React.Component{
       id: this.props.id,
     }
   }
+
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      name: nextProps.problem,
+      answer: nextProps.answer,
+      id: nextProps.id,
+    })
+  }
+
+
   render(){
     return(
       <div>
