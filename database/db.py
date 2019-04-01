@@ -67,8 +67,14 @@ class UsersTable:
         cursor.execute('''SELECT id,
                           login,
                           user_name,
-                          status,
-                          token
+                          status
+                          FROM users WHERE login = ?''', (str(login),))
+        row = cursor.fetchone()
+        return row
+
+    def get_password(self, login):
+        cursor = self.connection.cursor()
+        cursor.execute('''SELECT password_hash
                           FROM users WHERE login = ?''', (str(login),))
         row = cursor.fetchone()
         return row
@@ -82,15 +88,15 @@ class UsersTable:
     def exists(self, login):
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM users WHERE login = ?",
-                       (login, ))
+                       (login,))
         row = cursor.fetchone()
         return (True, row[0]) if row else (False,)
 
     def check_password(self, login, password):
-        row = self.get(login)
+        row = self.get_password(login)
         answer = 'error'
 
-        if row and pbkdf2_sha256.verify(password, row[3]):
+        if row and pbkdf2_sha256.verify(password, row[0]):
             answer = 'success'
 
         return answer
@@ -205,7 +211,7 @@ class CleanTable:
         self.connection.commit()
 
 
-class DataToCleaning:
+class CleaningTable:
     def __init__(self, connection):
         self.connection = connection
 
@@ -257,7 +263,7 @@ class StoryTable:
                             (id INTEGER PRIMARY KEY AUTOINCREMENT,
                              user_id INTEGER,
                              text TEXT,
-                             date DATETIME
+                             date TIMESTAMP
                              )''')
         cursor.close()
         self.connection.commit()
@@ -266,7 +272,7 @@ class StoryTable:
         cursor = self.connection.cursor()
 
         cursor.execute('''INSERT INTO stories
-                          (user_id, text, datetime) 
+                          (user_id, text, date) 
                           VALUES (?,?,?)''', (user_id, text, datetime))
 
         cursor.close()
@@ -320,10 +326,14 @@ def get_results(problems_id: list):
 
     for problem_id in problems_id:
         data = problem_table.get(problem_id)
-        res.append({'CALLBACKMEMO': data[2],
-                    'reply': data[3],
-                    'description': data[4],
-                    'problem_id': problem_id})
+        if data:
+            res.append({'CALLBACKMEMO': data[2],
+                        'reply': data[3],
+                        'description': data[4],
+                        'problem_id': problem_id})
+
+        else:
+            print(data)
 
     return res
 
@@ -368,3 +378,8 @@ def get_results(problems_id: list):
 # usr_table.insert('REnard', 'renard', 'password1234')
 # usr_table.set_status('REnard', 3)
 # print(usr_table.check_password('REnard', 'password1234'))
+# cleaning_table = CleaningTable(db.get_connection())
+# cleaning_table.init_table()
+# story_table = StoryTable(db.get_connection())
+# story_table.init_table()
+# story_table.insert(1, 'aaa', 1000)

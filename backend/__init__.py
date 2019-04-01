@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from json import dumps
 from database.db import *
-from backend.function_for_clean import to_normal_form
+from backend.function_for_clean import tokenize_me
 from ml.ml_code import ml
 from sqlite3 import IntegrityError
 from random import choice
@@ -11,7 +11,7 @@ app = Flask(__name__, template_folder='../frontend', static_folder='../frontend'
 database = DB()
 problem_table = ProblemsTable(database.get_connection())
 users_table = UsersTable(database.get_connection())
-cleaning_table = DataToCleaning(database.get_connection())
+cleaning_table = CleaningTable(database.get_connection())
 story_table = StoryTable(database.get_connection())
 
 
@@ -27,10 +27,10 @@ def find():
         data = eval(request.data.decode('utf-8'))
         text = data['searchValue']
         usr_id = int(data['idUser'])
-        date = data['datetime']
-        data = to_normal_form(text)
+        date = int(data['datetime'])
+        data = tokenize_me(text)
 
-        answer = {'answers': get_results(ml(data[0])),
+        answer = {'answers': tokenize_me(get_results(ml(data[0])), clean=False),
                   'deleted': data[1]}
 
         if usr_id != -1:
@@ -57,7 +57,7 @@ def record():
             answer = 'success'
 
         else:
-            answer = 'ID Error'
+            answer = 'error'
 
     else:
         answer = "I don't know what the hell I was thinking"
@@ -71,6 +71,7 @@ def login():
         data = eval(request.data.decode('utf-8'))
         log = data['login']
         password = data['password']
+        print(log, password)
         answer = users_table.check_password(log, password)
 
         if answer == 'success':
@@ -80,7 +81,7 @@ def login():
 
             users_table.set_token(log, token)
 
-            answer = {'errors': '',
+            answer = {'errors': None,
                       'user': users_table.get(log) + (token,)}
 
         else:
@@ -104,13 +105,13 @@ def register():
         if users_table.get(data['login']):
             return dumps('Login Error')
 
-        if 6 < len(pw) < 32 and pw.isalnum():
+        if 6 < len(pw) < 32 and pw.isalnum() and not(pw.isdigit() or pw.isalpha()):
             try:
                 users_table.insert(log, name, pw)
                 return dumps('success')
 
             except IntegrityError:
-                return dumps('Password Error')
+                return dumps('Login Error')
 
         return dumps('Password Error')
 
