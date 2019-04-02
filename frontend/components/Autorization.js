@@ -19,6 +19,7 @@ class Autorization extends React.Component{
       },
       textAlert: '',
       variant: "danger",
+      text: '',
     }
     this.enter = this.enter.bind(this);
     this.writeDataRegistration = this.writeDataRegistration.bind(this);
@@ -85,6 +86,11 @@ class Autorization extends React.Component{
             textAlert: "Пароль должен содержать:\n  1)Буквы и цифры,\n  2)Длина от 6 до 32.",
           })
         }
+        else if (data == 'success') {
+            main.setState({
+              text: "Регистрация прошла успешно!",
+          })
+        }
       });
     }
   )
@@ -101,7 +107,7 @@ class Autorization extends React.Component{
     const main = this;
 
 
-    fetch('/Find',
+    fetch('/Login',
     {
       method: 'post',
       headers: {
@@ -174,6 +180,21 @@ class Autorization extends React.Component{
       <p>{this.state.textAlert}</p>
       </Alert>: null;
 
+
+    let modalSend = (this.state.text.length) ?
+            <Modal
+                size="sm"
+                show
+                onHide={() => {this.setState({text: ''})}}
+                aria-labelledby="example-modal-sizes-title-sm"
+              >
+                <Modal.Header closeButton>
+                  <Modal.Title id="example-modal-sizes-title-sm">
+                    Подтверждение
+                  </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{this.state.text}</Modal.Body>
+              </Modal> : null;
     return(
       <Modal
         onHide={this.props.closeWindow}
@@ -217,6 +238,7 @@ class Autorization extends React.Component{
                     placeholder="Пароль"
                     aria-label="Username"
                     aria-describedby="basic-addon1"
+                    type="password"
                   />
                 </InputGroup>
                 {modalAlert}
@@ -226,14 +248,16 @@ class Autorization extends React.Component{
                     placeholder="Подтверждение пароля"
                     aria-label="Username"
                     aria-describedby="basic-addon1"
+                    type="password"
                   />
                 </InputGroup>
                 <Button
                     onClick={this.registration}
                     variant="outline-dark"
                 >Зарегистрироваться</Button>
-
               </Col>
+              {modalSend}
+
               <Col md={12} lg={6} xs={6}>
                 <h5>Вход</h5>
                 <InputGroup className="mb-3">
