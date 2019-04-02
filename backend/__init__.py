@@ -57,8 +57,6 @@ def find():
                     'deleted': deleted
                 }
 
-                search_total -= 1
-
                 if usr_id != -1:
                     story_table.insert(usr_id, text, date)
 
@@ -68,6 +66,8 @@ def find():
                     'answers': None,
                     'deleted': None
                 }
+
+            search_total -= 1
 
     else:
         answer = 'not post'
