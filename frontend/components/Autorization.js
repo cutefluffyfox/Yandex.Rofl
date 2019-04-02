@@ -1,6 +1,6 @@
 import React from "react";
 import {Image, Button, Modal, Container, Row, Col,
-          FormControl, InputGroup} from "react-bootstrap";
+          FormControl, InputGroup, Alert} from "react-bootstrap";
 
 class Autorization extends React.Component{
   constructor(props){
@@ -38,9 +38,24 @@ class Autorization extends React.Component{
     let password = this.state.registration.password;
     let user_name = this.state.registration.user_name
     const main = this;
+    if(this.state.registration.password != this.state.registration.reppassword){
+      main.setState({
+        textAlert: "Пароли  не совпадают!",
+      })
+    }
 
+    else if(!this.state.registration.login.length ||
+            !this.state.registration.Password.length ||
+            !this.state.registration.reppassword.length ||
+            !this.state.registration.user_name.length){
+      main.setState({
+        textAlert: "Не все поля заполнены!",
+      })
+      return;
+    }
 
-    fetch('/Find',
+    else{
+    fetch('/Register',
     {
       method: 'post',
       headers: {
@@ -65,6 +80,11 @@ class Autorization extends React.Component{
       response.json()
       .then(function(data) {
         console.log(data);
+        if(data == "Password Error"){
+          main.setState({
+            textAlert: "Пароль должен содержать:\n  1)Буквы и цифры,\n  2)Длина от 6 до 32.",
+          })
+        }
       });
     }
   )
@@ -73,6 +93,7 @@ class Autorization extends React.Component{
       console.log('Fetch Error :-S', err);
     });
   }
+}
 
   enter(){
     let login = this.state.enter.login;
