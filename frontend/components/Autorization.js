@@ -24,6 +24,7 @@ class Autorization extends React.Component{
     this.writeDataRegistration = this.writeDataRegistration.bind(this);
     this.writeDataLogin = this.writeDataLogin.bind(this);
     this.registration = this.registration.bind(this);
+    this.same = this.same.bind(this);
   }
 
   componentWillReceiveProps(nextProps){
@@ -113,6 +114,7 @@ class Autorization extends React.Component{
   }
 
   writeDataRegistration(first, second){
+      this.same();
       this.setState({
         registration: {
           ...this.state.registration,
@@ -127,6 +129,14 @@ class Autorization extends React.Component{
           ...this.state.enter,
           [second]: first.target.value,
         }
+    })
+  }
+
+  same(){
+    let answer = (this.state.registration.password != this.state.registration.reppassword) ? true : false;
+    let ret = (answer) ? "Пароли  не совпадают!" : '';
+    this.setState({
+      textAlert: {ret},
     })
   }
 
@@ -188,6 +198,7 @@ class Autorization extends React.Component{
                     aria-describedby="basic-addon1"
                   />
                 </InputGroup>
+                {modalAlert}
                 <InputGroup className="mb-3">
                   <FormControl
                     onChange={(e) => this.writeDataRegistration(e, 'reppassword')}
