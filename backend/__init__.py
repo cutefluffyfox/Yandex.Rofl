@@ -40,12 +40,18 @@ def find():
             text = data['searchValue']
             usr_id = int(data['idUser'])
             date = int(data['datetime'])
-            data = tokenize_me(text)
+            data, deleted = tokenize_me(text)
+            data = get_results(ml(data))
+
+            for _ in range(len(data)):
+                data[_]['description'] = tokenize_me(data[_]['description'], clean=False)
+
             answer = {
                 'errors': None,
-                'answers': tokenize_me(get_results(ml(data[0])), clean=False),
-                'deleted': data[1]
+                'answers': data,
+                'deleted': deleted
             }
+
             search_total -= 1
 
             if usr_id != -1:
@@ -86,7 +92,6 @@ def login():
         data = eval(request.data.decode('utf-8'))
         log = data['login']
         password = data['password']
-        print(log, password)
         answer = users_table.check_password(log, password)
 
         if answer == 'success':

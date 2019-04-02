@@ -242,5 +242,18 @@ class TestAddingProblem(unittest.TestCase):
     pass
 
 
+class TestSearch(unittest.TestCase):
+    def test_normal_search(self):
+        answer = requests.post(
+            'http://localhost:8000/Find',
+            data=dumps({
+                'searchValue': 'сгорел коммутатор',
+                'idUser': -1,
+                'datetime': 500
+            })).json()
+
+        self.assertEqual(len(answer['answers']), 5)
+
+
 if __name__ == '__main__':
     unittest.main()
