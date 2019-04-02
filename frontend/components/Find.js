@@ -46,7 +46,7 @@ class Find extends React.Component{
             },
             body: JSON.stringify({
              "searchValue": letter,
-             "datetime": new Date(),
+             "datetime": + new Date(),
              "idUser": main.state.idUser,
             }),
           })
