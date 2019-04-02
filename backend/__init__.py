@@ -40,25 +40,32 @@ def find():
             data = eval(request.data.decode('utf-8'))
             indexes = ('searchValue', 'idUser', 'datetime')
 
-            if type(data) is dict and\
+            if type(data) is dict and \
                     all([i in data for i in indexes]) and len(data) == len(indexes):
                 text = data['searchValue']
                 usr_id = int(data['idUser'])
                 date = int(data['datetime'])
                 data, deleted = tokenize_me(text)
-                data = get_results(ml(data))
+                try:
+                    data = get_results(ml(data))
+                    # for _ in range(len(data)):
+                    #    data[_]['description'] = tokenize_me(data[_]['description'], clean=False)
 
-                #for _ in range(len(data)):
-                #    data[_]['description'] = tokenize_me(data[_]['description'], clean=False)
+                    answer = {
+                        'errors': None,
+                        'answers': data,
+                        'deleted': deleted
+                    }
 
-                answer = {
-                    'errors': None,
-                    'answers': data,
-                    'deleted': deleted
-                }
+                    if usr_id != -1:
+                        story_table.insert(usr_id, text, date)
 
-                if usr_id != -1:
-                    story_table.insert(usr_id, text, date)
+                except MemoryError:
+                    answer = {
+                        'errors': 'server is busy',
+                        'answers': None,
+                        'deleted': None
+                    }
 
             else:
                 answer = {
@@ -113,7 +120,7 @@ def login():
         data = eval(request.data.decode('utf-8'))
         indexes = ('login', 'password')
 
-        if type(data) is dict and\
+        if type(data) is dict and \
                 all([i in data for i in indexes]) and len(data) == len(indexes):
             log = data['login']
             password = data['password']
@@ -149,7 +156,7 @@ def register():
         data = eval(request.data.decode('utf-8'))
         indexes = ('login', 'user_name', 'password')
 
-        if type(data) is not dict or\
+        if type(data) is not dict or \
                 not all([i in data for i in indexes]) or len(data) != len(indexes):
             answer = 'data is not json or wrong json'
 
