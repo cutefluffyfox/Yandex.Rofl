@@ -40,7 +40,8 @@ def find():
             data = eval(request.data.decode('utf-8'))
             indexes = ('searchValue', 'idUser', 'datetime')
 
-            if data is dict and all([i in data for i in indexes]):
+            if type(data) is dict and\
+                    all([i in data for i in indexes]) and len(data) == len(indexes):
                 text = data['searchValue']
                 usr_id = int(data['idUser'])
                 date = int(data['datetime'])
@@ -80,10 +81,14 @@ def record():
         data = eval(request.data.decode('utf-8'))
         indexes = ('id', 'callback', 'reply', 'description')
 
-        if data is not dict or not all([i in data for i in indexes]):
+        if not (
+                type(data) is dict or
+                all([i in data for i in indexes]) or
+                len(data) == len(indexes)
+        ):
             answer = 'data is not json or wrong json'
 
-        elif not problem_table.get(data['id']) and len(data['id']) > 2 and\
+        elif not problem_table.get(data['id']) and len(data['id']) > 2 and \
                 data['id'][:2].upper() == 'CD' and data['id'][2:].isdigit():
             problem_table.insert(data['id'],
                                  data['callback'],
@@ -108,7 +113,8 @@ def login():
         data = eval(request.data.decode('utf-8'))
         indexes = ('login', 'password')
 
-        if data is dict and all([i in data for i in indexes]):
+        if type(data) is dict and\
+                all([i in data for i in indexes]) and len(data) == len(indexes):
             log = data['login']
             password = data['password']
             answer = users_table.check_password(log, password)
@@ -141,9 +147,10 @@ def login():
 def register():
     if request.method == 'POST':
         data = eval(request.data.decode('utf-8'))
-        indexes = ('login', 'name', 'password')
+        indexes = ('login', 'user_name', 'password')
 
-        if data is not dict or not all([i in data for i in indexes]):
+        if type(data) is not dict or\
+                not all([i in data for i in indexes]) or len(data) != len(indexes):
             answer = 'data is not json or wrong json'
 
         elif users_table.get(data['login']):
@@ -152,7 +159,11 @@ def register():
         elif 6 < len(data['password']) < 32 and data['password'].isalnum() \
                 and not (data['password'].isdigit() or data['password'].isalpha()):
             try:
-                users_table.insert(data['login'], data['name'], data['password'])
+                users_table.insert(
+                    data['login'],
+                    data['user_name'],
+                    data['password']
+                )
                 answer = 'success'
 
             except IntegrityError:
@@ -169,7 +180,8 @@ def check_login():
     data = eval(request.data.decode('utf-8'))
     indexes = ('login',)
 
-    if data is not dict or not all([i in data for i in indexes]):
+    if type(data) is not dict or \
+            not all([i in data for i in indexes]) or len(data) != len(indexes):
         answer = 'data is not json or wrong json'
 
     elif users_table.get(data['login']):
@@ -186,7 +198,8 @@ def story():
     data = eval(request.data.decode('utf-8'))
     indexes = ('login', 'name', 'password')
 
-    if data is not dict or not all([i in data for i in indexes]):
+    if type(data) is not dict or \
+            not all([i in data for i in indexes]) or len(data) != len(indexes):
         answer = {'errors': 'data is not json or wrong json',
                   'story': None}
 
@@ -200,8 +213,10 @@ def story():
 @app.route('/GetAllUsers')
 def get_all_users():
     data = eval(request.data.decode('utf-8'))
+    indexes = ('id', 'token')
 
-    if data is not dict:
+    if type(data) is not dict or \
+            not all([i in data for i in indexes]) or len(data) != len(indexes):
         answer = {'errors': 'data is not json/dict',
                   'users': None}
 
