@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request
 from json import dumps
-from database.db import *
-from backend.function_for_clean import tokenize_me
-from ml.ml_code import ml
+from db import *
+from function_for_clean import tokenize_me
+from ml_code import ml
 from sqlite3 import IntegrityError
 from random import choice
 from string import ascii_lowercase, ascii_uppercase, digits
@@ -161,4 +161,4 @@ def get_all_users():
 
 
 if __name__ == '__main__':
-    app.run(port=8000, host='127.0.0.1')
+    app.run(port=8000, host='45.67.56.38')

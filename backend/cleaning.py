@@ -1,6 +1,6 @@
-from backend.function_for_clean import tokenize_me
+from function_for_clean import tokenize_me
 from gensim.models.keyedvectors import Word2VecKeyedVectors
-from database.db import *
+from db import *
 import pymorphy2
 
 morph = pymorphy2.MorphAnalyzer()
