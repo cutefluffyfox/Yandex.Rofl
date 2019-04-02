@@ -8,4 +8,5 @@ sudo: false
 addons:
   ssh_known_hosts:
   - 45.67.56.38
-  
+script:
+  - pytest
