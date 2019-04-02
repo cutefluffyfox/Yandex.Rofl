@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, InputGroup, FormControl, Spinner} from "react-bootstrap";
+import {Button, InputGroup, FormControl, Spinner, Modal} from "react-bootstrap";
 
 class Find extends React.Component{
   constructor(props){
@@ -9,6 +9,7 @@ class Find extends React.Component{
       isLoading: false,
       getString: this.props.getString,
       idUser: this.props.idUser,
+      see: false,
     }
     this.printFindString = this.printFindString.bind(this);
     this.sendSubmit = this.sendSubmit.bind(this);
@@ -64,7 +65,12 @@ class Find extends React.Component{
             response.json()
             .then(function(data) {
               console.log(data);
-              (data != []) ? main.props.getResult(data.answers) : main.props.getResult(data)
+              (data != []) ? main.props.getResult(data.answers || []) : main.props.getResult(data);
+              if(data.errors == 'server is busy'){
+                main.setState({
+                  see: true,
+                });
+              }
             });
           }
         )
@@ -72,6 +78,7 @@ class Find extends React.Component{
           function(err) {
             main.setState({
               isLoading: false,
+              see: true,
             });
           console.log('Fetch Error :-S', err);
         });
@@ -89,8 +96,31 @@ class Find extends React.Component{
       aria-hidden="true"
       /> : null;
 
+    let modalBusy =
+      <Modal
+          size="10%"
+          centered
+          show={this.state.see}
+          onHide={() => {this.setState({see: false,})}}
+          aria-labelledby="example-modal-sizes-title-sm"
+        >
+        <Modal.Header closeButton>
+          <Modal.Title id="example-modal-sizes-title-sm">
+            Ошибка запроса
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+                  <p>
+                    Извините, сервер перегружен множеством запросов!<br/>
+                    Повторите запрос.<br/>
+                    Если ошибка повториться - перезагрузите страницу.
+                  </p>
+        </Modal.Body>
+      </Modal>;
+
     return(
       <InputGroup className="mb-3">
+        {modalBusy}
         <FormControl
             onChange={this.printFindString}
             value={this.state.findString}
