@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, InputGroup, FormControl, Spinner, Modal} from "react-bootstrap";
+import {Button, InputGroup, FormControl, Spinner, Modal, Alert} from "react-bootstrap";
 
 class Find extends React.Component{
   constructor(props){
@@ -10,6 +10,7 @@ class Find extends React.Component{
       getString: this.props.getString,
       idUser: this.props.idUser,
       see: false,
+      results: false,
     }
     this.printFindString = this.printFindString.bind(this);
     this.sendSubmit = this.sendSubmit.bind(this);
@@ -59,8 +60,17 @@ class Find extends React.Component{
             if (response.status !== 200) {
               console.log('Looks like there was a problem. Status Code: ' +
                 response.status);
+              if(response.status === 500){
+                  main.setState({
+                    results: true,
+                  });
+              }
+              else{
+                main.setState({results: false})
+              }
               return;
             }
+
             // Examine the text in the response
             response.json()
             .then(function(data) {
@@ -118,7 +128,15 @@ class Find extends React.Component{
         </Modal.Body>
       </Modal>;
 
+    let noResults =
+      <Alert variant="secondary" style={{marginTop: "20px"}}>
+            <p>
+              Нет результатов по запросу "{this.state.findString}".
+            </p>
+      </Alert>
+
     return(
+      <div>
       <InputGroup className="mb-3">
         {modalBusy}
         <FormControl
@@ -140,8 +158,10 @@ class Find extends React.Component{
               onClick={this.sendSubmit}>
                   {loading} Поиск
             </Button>
-          </InputGroup.Append>
-          </InputGroup>
+            </InputGroup.Append>
+        </InputGroup>
+        {(this.state.results) ? noResults : null}
+        </div>
         );
       }
 };
