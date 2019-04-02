@@ -1,1 +1,15 @@
 language: python
+python: 3.6.7
+branches:
+  only:
+  - deploy
+dist: trusty
+sudo: false
+install:
+  - pip install -r requirements.txt
+  - pip install -e .
+addons:
+  ssh_known_hosts:
+  - 45.67.56.38
+script:
+  - pytest
