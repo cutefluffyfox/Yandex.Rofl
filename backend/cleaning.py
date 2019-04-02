@@ -25,7 +25,7 @@ def phrase_to_vector_to_str(phrase: str):
 
 if __name__ == '__main__':
     database = DB()
-    cleaning_table = DataToCleaning(database.get_connection())
+    cleaning_table = CleaningTable(database.get_connection())
     clean_table = CleanTable(database.get_connection())
 
     while True:

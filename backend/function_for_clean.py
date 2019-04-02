@@ -20,9 +20,11 @@ names.extend(list(read_csv('../backend/csv/for_names.csv')['name'].apply(str)))
 names = list(map(str.lower, names))
 
 
-def tokenize_me(file_text):
+def tokenize_me(file_text, clean=True):
     def delete(data: list):
         deleted_words = []
+        replace_words = ['***']
+
         morph = MorphAnalyzer()
         stop_words = stopwords.words('russian')
         stop_words.extend(['что', 'это', 'так', 'вот', 'быть', 'как', 'в', '—', 'к', 'на'])
@@ -31,19 +33,28 @@ def tokenize_me(file_text):
         i = 0
 
         while i < len(data):
-            if data[i] in cities or data[i] in names or data[i] in stop_words:
+            if data[i] in cities or data[i] in names or (clean and data[i] in stop_words) or\
+                    (data[i][0] == '8' and len(data[i]) == 11):
                 if data[i] == 'ул' and i + 1 < len(data):
                     deleted_words.append(data.pop(i + 1))
+                    if not clean:
+                        data.insert(i + 1, '***')
+
                 deleted_words.append(data.pop(i))
+                if not clean:
+                    data.insert(i, '***')
                 continue
 
             for letter in data[i]:
-                if letter not in alp:
+                if letter not in alp and data[i] not in replace_words:
                     deleted_words.append(data.pop(i))
+                    if not clean:
+                        data.insert(i, '***')
                     break
 
             else:
-                data[i] = morph.parse(data[i])[0].normal_form
+                if clean:
+                    data[i] = morph.parse(data[i])[0].normal_form
                 i += 1
 
         return deleted_words
