@@ -48,8 +48,8 @@ def find():
                 data, deleted = tokenize_me(text)
                 data = get_results(ml(data))
 
-                for _ in range(len(data)):
-                    data[_]['description'] = tokenize_me(data[_]['description'], clean=False)
+                #for _ in range(len(data)):
+                #    data[_]['description'] = tokenize_me(data[_]['description'], clean=False)
 
                 answer = {
                     'errors': None,

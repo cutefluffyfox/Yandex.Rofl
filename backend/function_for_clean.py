@@ -34,7 +34,7 @@ def tokenize_me(file_text, clean=True):
 
         while i < len(data):
             if data[i] in cities or data[i] in names or (clean and data[i] in stop_words) or\
-                    (data[i][0] == '8' and len(data[i]) == 11):
+                    (data[i][0] == '8' and 17 >= len(data[i]) >= 11):
                 if data[i] == 'ул' and i + 1 < len(data):
                     deleted_words.append(data.pop(i + 1))
                     if not clean:
@@ -44,6 +44,9 @@ def tokenize_me(file_text, clean=True):
                 if not clean:
                     data.insert(i, '***')
                 continue
+
+            if not clean:
+                alp1, alp = alp, data[i]
 
             for letter in data[i]:
                 if letter not in alp and data[i] not in replace_words:
@@ -57,6 +60,8 @@ def tokenize_me(file_text, clean=True):
                     data[i] = morph.parse(data[i])[0].normal_form
                 i += 1
 
+            if not clean:
+                alp = alp1
         return deleted_words
 
     def clear_str(txt: str):
@@ -66,7 +71,10 @@ def tokenize_me(file_text, clean=True):
 
     file_text, bad_words = clear_str(file_text)
 
-    return file_text, bad_words
+    if clean:
+        return file_text, bad_words
+
+    return file_text
 
 
 def to_normal_form(file_text):
