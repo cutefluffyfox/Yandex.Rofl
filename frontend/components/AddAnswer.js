@@ -11,6 +11,7 @@ class AddAnswer extends React.Component{
       description: '',
       textAlert: '',
       isLoading: false,
+      variant: "danger",
     }
     this.sendSubmit = this.sendSubmit.bind(this);
   }
@@ -52,6 +53,12 @@ class AddAnswer extends React.Component{
           response.json()
           .then(function(data){
             console.log(data);
+            if(data == "success"){
+              main.setState({
+                variant: "success",
+                textAlert: "Ответ отправлен на сервер!"
+              })
+            }
           })
         }
        )
@@ -166,7 +173,7 @@ class AddAnswer extends React.Component{
           }}
         >
         { (this.state.textAlert.length) ?
-        <Alert dismissible variant="danger"
+        <Alert dismissible variant={this.state.variant}
             onClick={() => {
               this.setState({
                 textAlert: '',
