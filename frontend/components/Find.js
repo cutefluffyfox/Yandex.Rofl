@@ -11,6 +11,7 @@ class Find extends React.Component{
       idUser: this.props.idUser,
       see: false,
       results: false,
+      errorString: '',
     }
     this.printFindString = this.printFindString.bind(this);
     this.sendSubmit = this.sendSubmit.bind(this);
@@ -66,10 +67,11 @@ class Find extends React.Component{
               if(response.status === 500){
                   main.setState({
                     results: true,
+                    errorString: main.state.findString,
                   });
               }
               else{
-                main.setState({results: false})
+                main.setState({results: false, errorString: ''})
               }
               return;
             }
@@ -83,7 +85,16 @@ class Find extends React.Component{
                 main.setState({
                   see: true,
                 });
+                return;
               }
+              if(!data.answers.length){
+                main.setState({
+                  results: true,
+                  errorString: main.state.findString,
+                });
+                return;
+              }
+              main.setState({results: false, errorString:""})
             });
           }
         )
@@ -126,17 +137,17 @@ class Find extends React.Component{
                   <p>
                     Извините, сервер перегружен множеством запросов!<br/>
                     Повторите запрос.<br/>
-                    Если ошибка повториться - перезагрузите страницу.
+                    Если ошибка повторится - перезагрузите страницу.
                   </p>
         </Modal.Body>
       </Modal>;
 
-    let noResults =
+    let noResults = (this.state.results && this.state.errorString.length) ?
       <Alert variant="secondary" style={{marginTop: "20px"}}>
             <p>
-              Нет результатов по запросу "{this.state.findString}".
+              Нет результатов по запросу "{this.state.errorString}".
             </p>
-      </Alert>
+      </Alert> : null;
 
     return(
       <div>
@@ -163,7 +174,7 @@ class Find extends React.Component{
             </Button>
             </InputGroup.Append>
         </InputGroup>
-        {(this.state.results) ? noResults : null}
+        {noResults}
         </div>
         );
       }
