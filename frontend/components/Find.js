@@ -28,6 +28,9 @@ class Find extends React.Component{
   }
 
   sendSubmit(){
+      if (this.state.isLoading)
+        return;
+
       const main = this;
       let letter = this.state.findString;
       if(letter == ''){
@@ -147,7 +150,7 @@ class Find extends React.Component{
             aria-label="Recipient's username"
             aria-describedby="basic-addon2"
             onKeyPress={ (event) => {
-              if(event.key == 'Enter'){
+              if(event.key == 'Enter' ){
                 main.sendSubmit();
               }
               return false;

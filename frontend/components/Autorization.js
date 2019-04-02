@@ -45,7 +45,7 @@ class Autorization extends React.Component{
     }
 
     else if(!this.state.registration.login.length ||
-            !this.state.registration.Password.length ||
+            !this.state.registration.password.length ||
             !this.state.registration.reppassword.length ||
             !this.state.registration.user_name.length){
       main.setState({
