@@ -25,6 +25,7 @@ def index():
 @app.route('/Find', methods=['POST'])
 def find():
     global search_total
+
     if request.method == 'POST':
         if search_total > 2:
             answer = {
@@ -37,19 +38,36 @@ def find():
         else:
             search_total += 1
             data = eval(request.data.decode('utf-8'))
-            text = data['searchValue']
-            usr_id = int(data['idUser'])
-            date = int(data['datetime'])
-            data = tokenize_me(text)
-            answer = {
-                'errors': None,
-                'answers': tokenize_me(get_results(ml(data[0])), clean=False),
-                'deleted': data[1]
-            }
-            search_total -= 1
+            indexes = ('searchValue', 'idUser', 'datetime')
 
-            if usr_id != -1:
-                story_table.insert(usr_id, text, date)
+            if type(data) is dict and\
+                    all([i in data for i in indexes]) and len(data) == len(indexes):
+                text = data['searchValue']
+                usr_id = int(data['idUser'])
+                date = int(data['datetime'])
+                data, deleted = tokenize_me(text)
+                data = get_results(ml(data))
+
+                for _ in range(len(data)):
+                    data[_]['description'] = tokenize_me(data[_]['description'], clean=False)
+
+                answer = {
+                    'errors': None,
+                    'answers': data,
+                    'deleted': deleted
+                }
+
+                search_total -= 1
+
+                if usr_id != -1:
+                    story_table.insert(usr_id, text, date)
+
+            else:
+                answer = {
+                    'errors': 'data is not json or wrong json',
+                    'answers': None,
+                    'deleted': None
+                }
 
     else:
         answer = 'not post'
@@ -61,8 +79,17 @@ def find():
 def record():
     if request.method == 'POST':
         data = eval(request.data.decode('utf-8'))
+        indexes = ('id', 'callback', 'reply', 'description')
 
-        if not problem_table.get(data['id']):
+        if not (
+                type(data) is dict or
+                all([i in data for i in indexes]) or
+                len(data) == len(indexes)
+        ):
+            answer = 'data is not json or wrong json'
+
+        elif not problem_table.get(data['id']) and len(data['id']) > 2 and \
+                data['id'][:2].upper() == 'CD' and data['id'][2:].isdigit():
             problem_table.insert(data['id'],
                                  data['callback'],
                                  data['reply'],
@@ -72,7 +99,7 @@ def record():
             answer = 'success'
 
         else:
-            answer = 'error'
+            answer = 'Id already in use'
 
     else:
         answer = "I don't know what the hell I was thinking"
@@ -84,27 +111,34 @@ def record():
 def login():
     if request.method == 'POST':
         data = eval(request.data.decode('utf-8'))
-        log = data['login']
-        password = data['password']
-        print(log, password)
-        answer = users_table.check_password(log, password)
+        indexes = ('login', 'password')
 
-        if answer == 'success':
-            token = ''.join(choice(
-                ascii_uppercase + ascii_lowercase + digits
-            ) for _ in range(32))
+        if type(data) is dict and\
+                all([i in data for i in indexes]) and len(data) == len(indexes):
+            log = data['login']
+            password = data['password']
+            answer = users_table.check_password(log, password)
 
-            users_table.set_token(log, token)
+            if answer == 'success':
+                token = ''.join(choice(
+                    ascii_uppercase + ascii_lowercase + digits
+                ) for _ in range(32))
 
-            answer = {'errors': None,
-                      'user': users_table.get(log) + (token,)}
+                users_table.set_token(log, token)
 
+                answer = {'errors': None,
+                          'user': users_table.get(log) + (token,)}
+
+            else:
+                answer = {'errors': 'error',
+                          'user': None}
         else:
-            answer = {'errors': 'error',
+            answer = {'errors': 'data is not json or wrong json',
                       'user': None}
 
     else:
-        answer = 'This is tha gate to infinity'
+        answer = {'errors': 'is not post',
+                  'user': None}
 
     return dumps(answer)
 
@@ -113,49 +147,86 @@ def login():
 def register():
     if request.method == 'POST':
         data = eval(request.data.decode('utf-8'))
-        pw = data['password']
-        log = data['login']
-        name = data['user_name']
+        indexes = ('login', 'user_name', 'password')
 
-        if users_table.get(data['login']):
-            return dumps('Login Error')
+        if type(data) is not dict or\
+                not all([i in data for i in indexes]) or len(data) != len(indexes):
+            answer = 'data is not json or wrong json'
 
-        if 6 < len(pw) < 32 and pw.isalnum() and not (pw.isdigit() or pw.isalpha()):
+        elif users_table.get(data['login']):
+            answer = 'Login Error'
+
+        elif 6 < len(data['password']) < 32 and data['password'].isalnum() \
+                and not (data['password'].isdigit() or data['password'].isalpha()):
             try:
-                users_table.insert(log, name, pw)
-                return dumps('success')
+                users_table.insert(
+                    data['login'],
+                    data['user_name'],
+                    data['password']
+                )
+                answer = 'success'
 
             except IntegrityError:
-                return dumps('Login Error')
+                answer = 'Login Error'
 
-        return dumps('Password Error')
+        else:
+            answer = 'Password Error'
+
+        return dumps(answer)
 
 
 @app.route('/Check', methods=['POST'])
 def check_login():
     data = eval(request.data.decode('utf-8'))
+    indexes = ('login',)
 
-    if users_table.get(data['login']):
-        return dumps('Login Error')
-    return dumps('success')
+    if type(data) is not dict or \
+            not all([i in data for i in indexes]) or len(data) != len(indexes):
+        answer = 'data is not json or wrong json'
+
+    elif users_table.get(data['login']):
+        answer = 'Login Error'
+
+    else:
+        answer = 'success'
+
+    return dumps(answer)
 
 
 @app.route('/Story', methods=['POST'])
 def story():
     data = eval(request.data.decode('utf-8'))
+    indexes = ('login', 'name', 'password')
 
-    return dumps(story_table.get(data['user_id']))
+    if type(data) is not dict or \
+            not all([i in data for i in indexes]) or len(data) != len(indexes):
+        answer = {'errors': 'data is not json or wrong json',
+                  'story': None}
+
+    else:
+        answer = {'errors': None,
+                  'story': story_table.get(data['user_id'])}
+
+    return dumps(answer)
 
 
 @app.route('/GetAllUsers')
 def get_all_users():
     data = eval(request.data.decode('utf-8'))
-    answer = {'error': 'Error',
-              'users': ''}
+    indexes = ('id', 'token')
 
-    if data['id'] == 3 and data['token'] == users_table.get_token(data['id']):
-        answer = {'error': '',
+    if type(data) is not dict or \
+            not all([i in data for i in indexes]) or len(data) != len(indexes):
+        answer = {'errors': 'data is not json/dict',
+                  'users': None}
+
+    elif data['id'] == 3 and data['token'] == users_table.get_token(data['id']):
+        answer = {'error': None,
                   'users': users_table.get_all()}
+
+    else:
+        answer = {'errors': 'Error',
+                  'users': None}
 
     return dumps(answer)
 

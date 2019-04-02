@@ -12,7 +12,13 @@ class TestAuthentication(unittest.TestCase):
                 'password': 'Password123'})).json()
 
         self.assertEqual(answer, {'errors': None,
-                                  'user': [1, 'REnard', 'renard', 1, answer['user'][-1]]
+                                  'user': [
+                                      1,
+                                      'REnard',
+                                      'renard',
+                                      1,
+                                      answer['user'][-1]
+                                  ]
                                   })
 
     def test_incorrect_login_letter_case(self):
@@ -171,6 +177,37 @@ class TestAuthentication(unittest.TestCase):
         self.assertEqual(answer, {'errors': 'error',
                                   'user': None})
 
+    def test_incorrect_data_type(self):
+        answer_list = requests.post(
+            'http://localhost:8000/Login',
+            data=dumps([
+                'login', 'renard',
+                'password', 'ddjssfajf1'
+            ])).json()
+
+        self.assertEqual(answer_list, {
+            'errors': 'data is not json or wrong json',
+            'user': None
+        })
+
+        answer_string = requests.post(
+            'http://localhost:8000/Login',
+            data=dumps('login''renard''password''ddjssfajf1')).json()
+
+        self.assertEqual(answer_string, {
+            'errors': 'data is not json or wrong json',
+            'user': None
+        })
+
+        answer_int = requests.post(
+            'http://localhost:8000/Login',
+            data=dumps(1833)).json()
+
+        self.assertEqual(answer_int, {
+            'errors': 'data is not json or wrong json',
+            'user': None
+        })
+
 
 class TestRegistration(unittest.TestCase):
     def test_correct_login_password(self):
@@ -237,9 +274,66 @@ class TestRegistration(unittest.TestCase):
 
         self.assertEqual(answer, 'Login Error')
 
+    def test_incorrect_data_type(self):
+        answer_list = requests.post(
+            'http://localhost:8000/Register',
+            data=dumps([
+                'login', 'renard',
+                'password', 'ddjssfajf1'
+            ])).json()
+
+        self.assertEqual(answer_list, 'data is not json or wrong json')
+
+        answer_string = requests.post(
+            'http://localhost:8000/Register',
+            data=dumps('login''renard''password''ddjssfajf1')).json()
+
+        self.assertEqual(answer_string, 'data is not json or wrong json')
+
+        answer_int = requests.post(
+            'http://localhost:8000/Register',
+            data=dumps(1833)).json()
+
+        self.assertEqual(answer_int, 'data is not json or wrong json')
+
 
 class TestAddingProblem(unittest.TestCase):
     pass
+
+
+class TestSearch(unittest.TestCase):
+    def test_normal_search(self):
+        answer = requests.post(
+            'http://localhost:8000/Find',
+            data=dumps({
+                'searchValue': 'сгорел коммутатор',
+                'idUser': -1,
+                'datetime': 500
+            })).json()
+
+        self.assertEqual(len(answer['answers']), 5)
+
+    def test_incorrect_data_type(self):
+        answer_list = requests.post(
+            'http://localhost:8000/Find',
+            data=dumps([
+                'login', 'renard',
+                'password', 'ddjssfajf1'
+            ])).json()
+
+        self.assertEqual(answer_list['errors'], 'data is not json or wrong json')
+
+        answer_string = requests.post(
+            'http://localhost:8000/Find',
+            data=dumps('login''renard''password''ddjssfajf1')).json()
+
+        self.assertEqual(answer_string['errors'], 'data is not json or wrong json')
+
+        answer_int = requests.post(
+            'http://localhost:8000/Login',
+            data=dumps(1833)).json()
+
+        self.assertEqual(answer_int['errors'], 'data is not json or wrong json')
 
 
 if __name__ == '__main__':
