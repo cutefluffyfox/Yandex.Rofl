@@ -5,6 +5,9 @@ branches:
   - deploy
 dist: trusty
 sudo: false
+install:
+  - pip install -r requirements.txt
+  - pip install -e .
 addons:
   ssh_known_hosts:
   - 45.67.56.38
