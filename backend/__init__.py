@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from json import dumps, loads
+from json.decoder import JSONDecodeError
 from database.db import *
 from backend.function_for_clean import tokenize_me
 from ml.ml_code import ml
@@ -39,7 +40,17 @@ def find():
 
         else:
             search_total += 1
-            data = loads(request.data)
+
+            try:
+                data = loads(request.data)
+
+            except JSONDecodeError:
+                return dumps({
+                    'errors': 'Oops',
+                    'answers': None,
+                    'deleted': None
+                })
+
             indexes = ('searchValue', 'idUser', 'datetime')
 
             if type(data) is dict and \
@@ -87,7 +98,12 @@ def find():
 @app.route('/Record', methods=['POST'])
 def record():
     if request.method == 'POST':
-        data = loads(request.data)
+        try:
+            data = loads(request.data)
+
+        except JSONDecodeError:
+            return dumps('Oops')
+
         indexes = ('id', 'callback', 'reply', 'description')
 
         if not (
@@ -119,7 +135,13 @@ def record():
 @app.route('/Login', methods=['POST'])
 def login():
     if request.method == 'POST':
-        data = loads(request.data)
+        try:
+            data = loads(request.data)
+
+        except JSONDecodeError:
+            return dumps({'errors': 'Oops',
+                    'user': None})
+
         indexes = ('login', 'password')
 
         if type(data) is dict and \
@@ -155,7 +177,12 @@ def login():
 @app.route('/Register', methods=['POST'])
 def register():
     if request.method == 'POST':
-        data = loads(request.data)
+        try:
+            data = loads(request.data)
+
+        except JSONDecodeError:
+            return dumps('Oops')
+
         indexes = ('login', 'user_name', 'password')
 
         if type(data) is not dict or \
@@ -186,7 +213,12 @@ def register():
 
 @app.route('/Check', methods=['POST'])
 def check_login():
-    data = loads(request.data)
+    try:
+        data = loads(request.data)
+
+    except JSONDecodeError:
+        return dumps('Oops')
+
     indexes = ('login',)
 
     if type(data) is not dict or \
@@ -204,7 +236,13 @@ def check_login():
 
 @app.route('/Story', methods=['POST'])
 def story():
-    data = loads(request.data)
+    try:
+        data = loads(request.data)
+
+    except JSONDecodeError:
+        return dumps({'errors': 'Oops',
+                      'story': None})
+
     indexes = ('login', 'name', 'password')
 
     if type(data) is not dict or \
@@ -221,7 +259,13 @@ def story():
 
 @app.route('/GetAllUsers')
 def get_all_users():
-    data = loads(request.data)
+    try:
+        data = loads(request.data)
+
+    except JSONDecodeError:
+        return dumps({'errors': 'Oops',
+                      'users': None})
+
     indexes = ('id', 'token')
 
     if type(data) is not dict or \
