@@ -27,12 +27,12 @@ if __name__ == '__main__':
     database = DB()
     cleaning_table = CleaningTable(database.get_connection())
     clean_table = CleanTable(database.get_connection())
+    data = cleaning_table.get_all()
 
-    while True:
-        data = cleaning_table.get()
-
-        if data:
-            text = tokenize_me(data[2])[0]
+    if data:
+        print(data)
+        for _ in data:
+            text = tokenize_me(_[2])[0]
 
             if text:
-                clean_table.insert(data[1], text, phrase_to_vector_to_str(text))
+                clean_table.insert(_[1], text, phrase_to_vector_to_str(text))
