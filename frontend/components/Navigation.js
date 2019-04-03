@@ -16,7 +16,11 @@ class Navigation extends React.Component{
               cursor: "pointer",
             }}
           >
-          CROC
+          <img src="frontend/image/Logo-04.png"
+               style={{
+                 height: "40px",
+               }}
+          />
         </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">

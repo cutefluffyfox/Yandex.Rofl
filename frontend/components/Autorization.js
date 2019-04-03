@@ -185,6 +185,7 @@ class Autorization extends React.Component{
             <Modal
                 size="sm"
                 show
+                centered
                 onHide={() => {this.setState({text: ''})}}
                 aria-labelledby="example-modal-sizes-title-sm"
               >
