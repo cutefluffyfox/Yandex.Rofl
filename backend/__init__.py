@@ -7,7 +7,6 @@ from ml.ml_code import ml
 from sqlite3 import IntegrityError
 from random import choice
 from string import ascii_lowercase, ascii_uppercase, digits
-from gensim.models.keyedvectors import Word2VecKeyedVectors
 
 app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
 
@@ -53,7 +52,7 @@ def find():
                 date = int(data['datetime'])
                 data, deleted = tokenize_me(text)
                 try:
-                    data = get_results(ml(data, model))
+                    data = get_results(ml(data))
                     # for _ in range(len(data)):
                     #    data[_]['description'] = tokenize_me(data[_]['description'], clean=False)
 
@@ -287,6 +286,5 @@ if __name__ == '__main__':
     users_table = UsersTable(database.get_connection())
     cleaning_table = CleaningTable(database.get_connection())
     story_table = StoryTable(database.get_connection())
-    model = Word2VecKeyedVectors.load("../ml/russian_database")
     search_total = 0
     app.run(port=8000, host='127.0.0.1')

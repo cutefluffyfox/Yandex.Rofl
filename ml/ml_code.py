@@ -4,6 +4,7 @@ from pymorphy2 import MorphAnalyzer
 from time import time
 from numpy import frombuffer, float32
 from random import shuffle
+from gensim.models.keyedvectors import Word2VecKeyedVectors
 
 """
 МЫ НЕ ГАРАНТИРУЕМ, ЧТО ЭТО РАБОТАЕТ
@@ -13,7 +14,7 @@ from random import shuffle
 """
 
 
-def ml(phrase: str, model) -> list:
+def ml(phrase: str) -> list:
     """
     Получает на вход строку с 'красивыми' данными разделённые пробелами, делает анализ запроса и возращает
     список топ-5 (от наиболее похожих до наименее похожих) номеров ошибок.
@@ -49,7 +50,7 @@ def ml(phrase: str, model) -> list:
     print("#" * 44)
     print(f"Entered data: {phrase.split()}")
     print("#" * 44)
-
+    model = Word2VecKeyedVectors.load("../ml/russian_database")
     db = DB()
     clean_table = CleanTable(db.get_connection())
     data = clean_table.get_all()
