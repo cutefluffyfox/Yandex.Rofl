@@ -252,6 +252,16 @@ class CleaningTable:
             self.connection.commit()
         return row
 
+    def get_all(self):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM cleaning")
+        row = cursor.fetchall()
+        if row:
+            cursor.execute('''DELETE FROM cleaning''')
+            cursor.close()
+            self.connection.commit()
+        return row
+
 
 class StoryTable:
     def __init__(self, connection):

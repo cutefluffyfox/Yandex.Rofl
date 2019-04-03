@@ -113,15 +113,19 @@ def record():
         ):
             answer = 'data is not json or wrong json'
 
-        elif not problem_table.get(data['id']) and len(data['id']) > 2 and \
-                data['id'][:2].upper() == 'CD' and data['id'][2:].isdigit():
-            problem_table.insert(data['id'],
-                                 data['callback'],
-                                 data['reply'],
-                                 data['description'])
-            cleaning_table.insert(data['id'],
-                                  data['description'])
-            answer = 'success'
+        elif not problem_table.get(data['id']):
+
+            if len(data['id']) > 2 and data['id'][:2].upper() == 'SD' and data['id'][2:].isdigit():
+                problem_table.insert(data['id'],
+                                     data['callback'],
+                                     data['reply'],
+                                     data['description'])
+                cleaning_table.insert(data['id'],
+                                      data['description'])
+                answer = 'success'
+
+            else:
+                answer = 'Incorrect id'
 
         else:
             answer = 'Id already in use'
@@ -140,7 +144,7 @@ def login():
 
         except JSONDecodeError:
             return dumps({'errors': 'Oops',
-                    'user': None})
+                          'user': None})
 
         indexes = ('login', 'password')
 

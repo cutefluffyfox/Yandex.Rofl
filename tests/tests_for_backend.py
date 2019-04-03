@@ -1,6 +1,8 @@
 import unittest
 import requests
 from json import dumps
+from random import choice
+from string import ascii_lowercase, ascii_uppercase, digits
 
 
 class TestAuthentication(unittest.TestCase):
@@ -298,7 +300,45 @@ class TestRegistration(unittest.TestCase):
 
 
 class TestAddingProblem(unittest.TestCase):
-    pass
+    def test_incorrect_id(self):
+        answer_cd = requests.post('http://localhost:8000/Record', data=dumps({'id': 'cd1083',
+                                                                              'callback': 'callback',
+                                                                              'description': 'description',
+                                                                              'reply': 'reply'})).json()
+        self.assertEqual(answer_cd, "Incorrect id")
+
+        answer_random = requests.post(
+            'http://localhost:8000/Record', data=dumps({
+                'id': ''.join(choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(8)),
+                'callback': 'callback',
+                'description': 'description',
+                'reply': 'reply'
+            })).json()
+
+        if answer_cd[:2].lower() == 'sd' and answer_cd[2:].isdigit():
+            self.assertEqual(answer_random, "success")
+
+        else:
+            self.assertEqual(answer_random, "Incorrect id")
+
+        answer_correct = requests.post(
+            'http://localhost:8000/Record', data=dumps({
+                'id': 'sd1833',
+                'callback': 'callback',
+                'description': 'description',
+                'reply': 'reply'
+            })).json()
+        self.assertEqual(answer_correct, 'success')
+
+        answer_already_in_use = requests.post(
+            'http://localhost:8000/Record', data=dumps({
+                'id': 'sd1833',
+                'callback': 'callback',
+                'description': 'description',
+                'reply': 'reply'
+            })).json()
+
+        self.assertEqual(answer_already_in_use, 'Id already in use')
 
 
 class TestSearch(unittest.TestCase):
