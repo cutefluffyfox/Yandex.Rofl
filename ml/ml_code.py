@@ -2,7 +2,6 @@ from database.db import *
 from sklearn.metrics.pairwise import cosine_similarity
 from pymorphy2 import MorphAnalyzer
 from time import time
-from gensim.models.keyedvectors import Word2VecKeyedVectors
 from numpy import frombuffer, float32
 from random import shuffle
 
@@ -14,7 +13,7 @@ from random import shuffle
 """
 
 
-def ml(phrase: str) -> list:
+def ml(phrase: str, model) -> list:
     """
     Получает на вход строку с 'красивыми' данными разделённые пробелами, делает анализ запроса и возращает
     список топ-5 (от наиболее похожих до наименее похожих) номеров ошибок.
@@ -47,13 +46,9 @@ def ml(phrase: str) -> list:
         print(text)
         print("-" * max(len(text), len(str(this_time)) + 4))
 
-    print("#" * (len(str(phrase.split())) + 14))
+    print("#" * 44)
     print(f"Entered data: {phrase.split()}")
-    print("#" * (len(str(phrase.split())) + 14))
-
-    start_timer()
-    model = Word2VecKeyedVectors.load("../ml/russian_database")
-    end_timer("Load rus database")
+    print("#" * 44)
 
     db = DB()
     clean_table = CleanTable(db.get_connection())
