@@ -41,10 +41,10 @@ def ml(phrase: str, model) -> list:
         """
         global start
         this_time = time() - start
-        print("-" * max(len(text), len(str(this_time)) + 4))
+        print("-" * 44)
         print(this_time, "sec")
         print(text)
-        print("-" * max(len(text), len(str(this_time)) + 4))
+        print("-" * 44)
 
     print("#" * 44)
     print(f"Entered data: {phrase.split()}")
