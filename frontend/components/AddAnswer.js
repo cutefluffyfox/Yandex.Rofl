@@ -56,7 +56,11 @@ class AddAnswer extends React.Component{
             if(data == "success"){
               main.setState({
                 variant: "success",
-                textAlert: "Ответ отправлен на сервер!"
+                textAlert: "Ответ отправлен на сервер!",
+                id: '',
+                callback: '',
+                reply: '',
+                description: ''
               })
             }
           })
@@ -103,6 +107,7 @@ class AddAnswer extends React.Component{
           aria-label="Default"
           placeholder="Номер id"
           aria-describedby="inputGroup-sizing"
+          value={this.state.id}
         />
       </InputGroup>
       <div style={{
@@ -120,6 +125,7 @@ class AddAnswer extends React.Component{
                 callback: event.target.value,
               })
             }}
+            value={this.state.callback}
             style={{minHeight: "41px"}}
             as="textarea"
             placeholder="Описание проблемы"
@@ -137,6 +143,7 @@ class AddAnswer extends React.Component{
                 reply: event.target.value,
               })
             }}
+            value={this.state.reply}
             style={{minHeight: "41px"}}
             aria-label="Default"
             placeholder="Краткий ответ"
@@ -147,7 +154,7 @@ class AddAnswer extends React.Component{
           style={{paddingBottom:"20px"}}>
           <InputGroup.Prepend>
             <InputGroup.Text
-              style={{width: "100px", textAlign:"center"}}>Ответ</InputGroup.Text>
+              style={{width: "100px", textAlign:"center"}}>Доп.инфо</InputGroup.Text>
           </InputGroup.Prepend>
           <FormControl
             onChange={event => {
@@ -155,6 +162,7 @@ class AddAnswer extends React.Component{
                 description: event.target.value,
               })
             }}
+            value={this.state.description}
             style={{minHeight: "41px"}}
             as="textarea"
             placeholder="Решение"
