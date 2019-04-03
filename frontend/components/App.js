@@ -73,9 +73,10 @@ class App extends React.Component{
         <Row style={{
           marginTop: (this.state.answer.length) ? "0%" : "15%",
         }}>
-          <Col md={{ span: 4, offset: 4 }}
+          <Col md={{ span: 8, offset: 2 }}
               sm={12}
-              xs={12}>
+              xs={12}
+              lg={{span: 4, offset: 4}}>
             { (this.state.answer.length) ? null
               : <Image
                   src="frontend/image/Croc_logo_eng_RGB.png"
