@@ -30,7 +30,6 @@ if __name__ == '__main__':
     data = cleaning_table.get_all()
 
     if data:
-        print(data)
         for _ in data:
             text = tokenize_me(_[2])[0]
 
