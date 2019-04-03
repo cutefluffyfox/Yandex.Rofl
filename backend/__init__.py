@@ -10,13 +10,6 @@ from string import ascii_lowercase, ascii_uppercase, digits
 from gensim.models.keyedvectors import Word2VecKeyedVectors
 
 app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
-database = DB()
-problem_table = ProblemsTable(database.get_connection())
-users_table = UsersTable(database.get_connection())
-cleaning_table = CleaningTable(database.get_connection())
-story_table = StoryTable(database.get_connection())
-model = Word2VecKeyedVectors.load("../ml/russian_database")
-search_total = 0
 
 
 @app.route('/')
@@ -289,4 +282,11 @@ def get_all_users():
 
 
 if __name__ == '__main__':
+    database = DB()
+    problem_table = ProblemsTable(database.get_connection())
+    users_table = UsersTable(database.get_connection())
+    cleaning_table = CleaningTable(database.get_connection())
+    story_table = StoryTable(database.get_connection())
+    model = Word2VecKeyedVectors.load("../ml/russian_database")
+    search_total = 0
     app.run(port=8000, host='127.0.0.1')
