@@ -15,23 +15,22 @@ class Results extends React.Component{
   }
 
   find(text){
-    txt = text.split();
-    for(var i = 0; i < txt.length; i++){
-      text.replace(txt[i], <span style={{background:"#E2FF16"}}>{txt[i]}</span>)
-    }
-
-
+    this.state.found.split(' ').forEach(v => {
+      text = text.replace(v, '<span style="background: #E2FF16">' + v + '</span>')
+    });
+    return text
   }
 
   componentWillReceiveProps(nextProps){
     this.setState({
       answer: nextProps.data,
+      found: nextProps.found,
     })
   }
 
   render(){
     let renderProblems = this.state.answer.map((v, i) =>
-      <SearchItem key={i} problem={v.description} answer={v.reply} id={v.problem_id} mem={v.CALLBACKMEMO} find={this.find}/>
+      <SearchItem key={i} problem={this.find(v.description)} answer={this.find(v.reply)} id={v.problem_id} mem={this.find(v.CALLBACKMEMO)} />
     );
     let header = (this.state.answer.length) ? <Card.Header> Ответы: </Card.Header>: null;
 

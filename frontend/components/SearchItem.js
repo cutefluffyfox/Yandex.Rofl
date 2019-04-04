@@ -28,8 +28,7 @@ class SearchItem extends React.Component{
   render(){
 
     const popover = (
-      <Popover id="popover-basic" title="Переписка">
-        {this.state.mem}
+      <Popover id="popover-basic" title="Переписка" dangerouslySetInnerHTML={{__html: this.state.mem }}>
       </Popover>
     );
 
@@ -54,12 +53,8 @@ class SearchItem extends React.Component{
                 fontSize: "12pt",
                 fontFamily: 'Arial',
               }}
+              dangerouslySetInnerHTML={{ __html: this.state.name + '<hr />' + this.state.answer + '<br />' + ((this.state.show) ? '<span><hr/>' + this.state.mem + '</span>' : '')}}
             >
-            {find(this.state.name)}
-            <hr/>
-            {find(this.state.answer)}
-            <br/>
-            {(this.state.show) ? <span><hr/>{find(this.state.mem)}</span> : null}
           </Card.Text>
         </Card.Body>
         <Card.Footer>

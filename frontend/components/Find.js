@@ -24,7 +24,7 @@ class Find extends React.Component{
   }
 
   printFindString(e){
-    this.state.getString(this.state.findString);
+    this.state.getString(e.target.value);
     this.setState({findString : e.target.value});
   }
 
