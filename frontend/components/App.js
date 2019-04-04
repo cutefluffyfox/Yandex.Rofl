@@ -5,7 +5,7 @@ import Find from "./Find";
 import Results from "./Results";
 import AddAnswer from "./AddAnswer";
 import ErrorModal from "./ErrorModal";
-import Autorization from "./Autorization";
+import UserProfile from "./UserProfile";
 
 class App extends React.Component{
 
@@ -29,7 +29,14 @@ class App extends React.Component{
     this.getString = this.getString.bind(this);
     this.getShowModal = this.getShowModal.bind(this);
     this.closeWindow = this.closeWindow.bind(this);
+    this.getUserData = this.getUserData.bind(this);
   };
+
+  getUserData(par){
+    this.setState({
+      user: par,
+    })
+  }
 
   getResult(parametr){
     this.setState({
@@ -96,7 +103,7 @@ class App extends React.Component{
             <Find getResult={this.getResult} findString={this.state.findString}
                   getString={this.getString}
                   idUser={this.state.user.id}/>
-            <Results data={this.state.answer} />
+            <Results data={this.state.answer} found={this.state.findString}/>
           </Col>
         </Row>;
         break;
@@ -125,12 +132,13 @@ class App extends React.Component{
             xs={12}
             >
             <Navigation switchNavigation={this.changeRender}
-                        getShowModal={this.getShowModal}/>
+                        getShowModal={this.getShowModal}
+                        id={this.state.user.id}
+            />
           </Col>
         </Row>
           {mainBlock}
           {errorModal}
-          <Autorization showModal={this.state.showModal} closeWindow={this.closeWindow}/>
       </Container>
     );
   }

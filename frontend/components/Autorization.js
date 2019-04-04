@@ -41,7 +41,7 @@ class Autorization extends React.Component{
     const main = this;
     if(this.state.registration.password != this.state.registration.reppassword){
       main.setState({
-        textAlert: "Пароли  не совпадают!",
+        textAlert: "Пароли не совпадают!",
       })
     }
 
@@ -88,7 +88,7 @@ class Autorization extends React.Component{
         }
         else if (data == 'success') {
             main.setState({
-              text: "Регистрация прошла успешно!",
+              text: <div>Регистрация прошла успешно!<br/>Войдите в аккаунт.</div>,
           })
         }
       });
@@ -131,6 +131,7 @@ class Autorization extends React.Component{
       response.json()
       .then(function(data) {
         console.log(data);
+        if 
       });
     }
   )

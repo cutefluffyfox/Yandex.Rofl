@@ -63,6 +63,9 @@ class AddAnswer extends React.Component{
                 description: ''
               })
             }
+            else if(data == "Id already in use"){
+              main.setState
+            }
           })
         }
        )
@@ -122,10 +125,10 @@ class AddAnswer extends React.Component{
           <FormControl
             onChange={event => {
               this.setState({
-                callback: event.target.value,
+                description: event.target.value,
               })
             }}
-            value={this.state.callback}
+            value={this.state.description}
             style={{minHeight: "41px"}}
             as="textarea"
             placeholder="Описание проблемы"
@@ -159,10 +162,10 @@ class AddAnswer extends React.Component{
           <FormControl
             onChange={event => {
               this.setState({
-                description: event.target.value,
+                callback: event.target.value,
               })
             }}
-            value={this.state.description}
+            value={this.state.callback}
             style={{minHeight: "41px"}}
             as="textarea"
             placeholder="Решение"
