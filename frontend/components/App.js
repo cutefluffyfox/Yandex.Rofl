@@ -5,7 +5,7 @@ import Find from "./Find";
 import Results from "./Results";
 import AddAnswer from "./AddAnswer";
 import ErrorModal from "./ErrorModal";
-import Autorization from "./Autorization";
+import UserProfile from "./UserProfile";
 
 class App extends React.Component{
 
@@ -29,7 +29,14 @@ class App extends React.Component{
     this.getString = this.getString.bind(this);
     this.getShowModal = this.getShowModal.bind(this);
     this.closeWindow = this.closeWindow.bind(this);
+    this.getUserData = this.getUserData.bind(this);
   };
+
+  getUserData(par){
+    this.setState({
+      user: par,
+    })
+  }
 
   getResult(parametr){
     this.setState({
@@ -73,7 +80,10 @@ class App extends React.Component{
         <Row style={{
           marginTop: (this.state.answer.length) ? "0%" : "15%",
         }}>
-          <Col md={{ span: 4, offset: 4 }}>
+          <Col md={{ span: 8, offset: 2 }}
+              sm={12}
+              xs={12}
+              lg={{span: 4, offset: 4}}>
             { (this.state.answer.length) ? null
               : <Image
                   src="frontend/image/Croc_logo_eng_RGB.png"
@@ -84,6 +94,8 @@ class App extends React.Component{
           </Col>
           <Col
             md={12}
+            sm={12}
+            xs={12}
             style={{
               paddingTop: "20px",
             }}
@@ -91,14 +103,18 @@ class App extends React.Component{
             <Find getResult={this.getResult} findString={this.state.findString}
                   getString={this.getString}
                   idUser={this.state.user.id}/>
-            <Results data={this.state.answer} />
+            <Results data={this.state.answer} found={this.state.findString}/>
           </Col>
         </Row>;
         break;
       case 1:
         mainBlock =
           <Row style={{paddingTop: "10%"}}>
-            <Col>
+            <Col
+              md={12}
+              sm={12}
+              xs={12}
+              >
               <AddAnswer/>
             </Col>
           </Row>
@@ -110,14 +126,19 @@ class App extends React.Component{
     return(
       <Container style={{ height: '100%', width: "100%" }} lenAnswer={this.state.answer.length}>
         <Row>
-          <Col>
+          <Col
+            md={12}
+            sm={12}
+            xs={12}
+            >
             <Navigation switchNavigation={this.changeRender}
-                        getShowModal={this.getShowModal}/>
+                        getShowModal={this.getShowModal}
+                        id={this.state.user.id}
+            />
           </Col>
         </Row>
           {mainBlock}
           {errorModal}
-          <Autorization showModal={this.state.showModal} closeWindow={this.closeWindow}/>
       </Container>
     );
   }

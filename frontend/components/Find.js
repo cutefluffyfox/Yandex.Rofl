@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, InputGroup, FormControl, Spinner} from "react-bootstrap";
+import {Button, InputGroup, FormControl, Spinner, Modal, Alert} from "react-bootstrap";
 
 class Find extends React.Component{
   constructor(props){
@@ -9,6 +9,9 @@ class Find extends React.Component{
       isLoading: false,
       getString: this.props.getString,
       idUser: this.props.idUser,
+      see: false,
+      results: false,
+      errorString: '',
     }
     this.printFindString = this.printFindString.bind(this);
     this.sendSubmit = this.sendSubmit.bind(this);
@@ -26,6 +29,9 @@ class Find extends React.Component{
   }
 
   sendSubmit(){
+      if (this.state.isLoading)
+        return;
+
       const main = this;
       let letter = this.state.findString;
       if(letter == ''){
@@ -46,7 +52,7 @@ class Find extends React.Component{
             },
             body: JSON.stringify({
              "searchValue": letter,
-             "datetime": new Date(),
+             "datetime": + new Date(),
              "idUser": main.state.idUser,
             }),
           })
@@ -58,13 +64,37 @@ class Find extends React.Component{
             if (response.status !== 200) {
               console.log('Looks like there was a problem. Status Code: ' +
                 response.status);
+              if(response.status === 500){
+                  main.setState({
+                    results: true,
+                    errorString: main.state.findString,
+                  });
+              }
+              else{
+                main.setState({results: false, errorString: ''})
+              }
               return;
             }
+
             // Examine the text in the response
             response.json()
             .then(function(data) {
               console.log(data);
-              (data != []) ? main.props.getResult(data.answers) : main.props.getResult(data) 
+              (data != []) ? main.props.getResult(data.answers || []) : main.props.getResult(data);
+              if(data.errors == 'server is busy'){
+                main.setState({
+                  see: true,
+                });
+                return;
+              }
+              if(!data.answers.length){
+                main.setState({
+                  results: true,
+                  errorString: main.state.findString,
+                });
+                return;
+              }
+              main.setState({results: false, errorString:""})
             });
           }
         )
@@ -72,6 +102,7 @@ class Find extends React.Component{
           function(err) {
             main.setState({
               isLoading: false,
+              see: true,
             });
           console.log('Fetch Error :-S', err);
         });
@@ -89,8 +120,39 @@ class Find extends React.Component{
       aria-hidden="true"
       /> : null;
 
+    let modalBusy =
+      <Modal
+          size="10%"
+          centered
+          show={this.state.see}
+          onHide={() => {this.setState({see: false,})}}
+          aria-labelledby="example-modal-sizes-title-sm"
+        >
+        <Modal.Header closeButton>
+          <Modal.Title id="example-modal-sizes-title-sm">
+            Ошибка запроса
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+                  <p>
+                    Извините, сервер перегружен множеством запросов!<br/>
+                    Повторите запрос.<br/>
+                    Если ошибка повторится - перезагрузите страницу.
+                  </p>
+        </Modal.Body>
+      </Modal>;
+
+    let noResults = (this.state.results && this.state.errorString.length) ?
+      <Alert variant="secondary" style={{marginTop: "20px"}}>
+            <p>
+              Нет результатов по запросу "{this.state.errorString}".
+            </p>
+      </Alert> : null;
+
     return(
+      <div>
       <InputGroup className="mb-3">
+        {modalBusy}
         <FormControl
             onChange={this.printFindString}
             value={this.state.findString}
@@ -99,7 +161,7 @@ class Find extends React.Component{
             aria-label="Recipient's username"
             aria-describedby="basic-addon2"
             onKeyPress={ (event) => {
-              if(event.key == 'Enter'){
+              if(event.key == 'Enter' ){
                 main.sendSubmit();
               }
               return false;
@@ -110,8 +172,10 @@ class Find extends React.Component{
               onClick={this.sendSubmit}>
                   {loading} Поиск
             </Button>
-          </InputGroup.Append>
-          </InputGroup>
+            </InputGroup.Append>
+        </InputGroup>
+        {noResults}
+        </div>
         );
       }
 };

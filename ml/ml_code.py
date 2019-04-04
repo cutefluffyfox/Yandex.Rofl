@@ -3,7 +3,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from pymorphy2 import MorphAnalyzer
 from time import time
 from gensim.models.keyedvectors import Word2VecKeyedVectors
-import numpy
+from numpy import frombuffer, float32
 from random import shuffle
 
 """
@@ -41,10 +41,15 @@ def ml(phrase: str) -> list:
         (Выводит в консоль)
         """
         global start
-        print("-----------------------------")
-        print(time() - start)
+        this_time = time() - start
+        print("-" * max(len(text), len(str(this_time)) + 4))
+        print(this_time, "sec")
         print(text)
-        print("-----------------------------")
+        print("-" * max(len(text), len(str(this_time)) + 4))
+
+    print("#" * (len(str(phrase.split())) + 14))
+    print(f"Entered data: {phrase.split()}")
+    print("#" * (len(str(phrase.split())) + 14))
 
     start_timer()
     model = Word2VecKeyedVectors.load("../ml/russian_database")
@@ -65,30 +70,26 @@ def ml(phrase: str) -> list:
         for stroke in data:
             if len(set(stroke[2].split()) & main_text) >= len(main_text) // 3 + 1:
                 out.append(stroke[1])
-        end_timer("ERROR: All data found")
         shuffle(out)
-        return out[:10]
+        out = out[:10]
+        end_timer(f"ERROR: Cannot transform all words to vector -> shuffle -> out: {out}")
+        return out
 
     start_timer()
     for stroke in data:
         try:
-            this_vector = [numpy.frombuffer(stroke[3], dtype=numpy.float32)]
+            this_vector = [frombuffer(stroke[3], dtype=float32)]
             this = (cosine_similarity(this_vector, main_vector), stroke[1])
             if len(minn) < 5:
                 minn.append(this)
             elif minn[0][0][0] < this[0][0]:
-                minn.append(this)
-                minn = sorted(minn, key=lambda a: a[0][0])[1:]
+                minn[0] = this
+                minn = sorted(minn, key=lambda a: a[0][0])
         except AttributeError:
             pass
         except ValueError:
             pass
-    end_timer("Words -> vec -> top 5")
-    out = []
-    for data in minn:
-        out.append(data[-1])
-    out.reverse()
+    out = [out_data[-1] for out_data in minn[::-1]]
+    end_timer(f"Word -> vec -> top5: {out}")
     return out
 
-
-print(ml("гей"))

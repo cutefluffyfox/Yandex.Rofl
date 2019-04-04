@@ -4,6 +4,9 @@ import {Container, Row, Col, Button, InputGroup, FormControl, Navbar, Nav} from 
 class Navigation extends React.Component{
   constructor(props){
     super(props);
+    this.state = {
+      id: this.props.id,
+    }
     }
 
 
@@ -16,7 +19,11 @@ class Navigation extends React.Component{
               cursor: "pointer",
             }}
           >
-          CROC
+          <img src="frontend/image/Logo-04.png"
+               style={{
+                 height: "40px",
+               }}
+          />
         </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
@@ -24,9 +31,6 @@ class Navigation extends React.Component{
               </Nav>
               <Nav>
                 <Nav.Link onClick={() => this.props.switchNavigation(1)}>Добавить</Nav.Link>
-                <Nav.Link eventKey={2} onClick={() => this.props.getShowModal(true)}>
-                  Авторизация
-                </Nav.Link>
               </Nav>
             </Navbar.Collapse>
       </Navbar>;

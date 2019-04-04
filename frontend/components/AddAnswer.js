@@ -10,6 +10,8 @@ class AddAnswer extends React.Component{
       reply: '',
       description: '',
       textAlert: '',
+      isLoading: false,
+      variant: "danger",
     }
     this.sendSubmit = this.sendSubmit.bind(this);
   }
@@ -44,12 +46,26 @@ class AddAnswer extends React.Component{
       .then(
         function(response){
           if(response.status != 200){
+            main.setState({textAlert: "Упссс... Проверьте подключение к интернету!"})
             console.log("Status Code:" + response.status);
             return
           }
           response.json()
           .then(function(data){
             console.log(data);
+            if(data == "success"){
+              main.setState({
+                variant: "success",
+                textAlert: "Ответ отправлен на сервер!",
+                id: '',
+                callback: '',
+                reply: '',
+                description: ''
+              })
+            }
+            else if(data == "Id already in use"){
+              main.setState
+            }
           })
         }
        )
@@ -94,6 +110,7 @@ class AddAnswer extends React.Component{
           aria-label="Default"
           placeholder="Номер id"
           aria-describedby="inputGroup-sizing"
+          value={this.state.id}
         />
       </InputGroup>
       <div style={{
@@ -108,9 +125,10 @@ class AddAnswer extends React.Component{
           <FormControl
             onChange={event => {
               this.setState({
-                callback: event.target.value,
+                description: event.target.value,
               })
             }}
+            value={this.state.description}
             style={{minHeight: "41px"}}
             as="textarea"
             placeholder="Описание проблемы"
@@ -128,6 +146,7 @@ class AddAnswer extends React.Component{
                 reply: event.target.value,
               })
             }}
+            value={this.state.reply}
             style={{minHeight: "41px"}}
             aria-label="Default"
             placeholder="Краткий ответ"
@@ -138,14 +157,15 @@ class AddAnswer extends React.Component{
           style={{paddingBottom:"20px"}}>
           <InputGroup.Prepend>
             <InputGroup.Text
-              style={{width: "100px", textAlign:"center"}}>Ответ</InputGroup.Text>
+              style={{width: "100px", textAlign:"center"}}>Доп.инфо</InputGroup.Text>
           </InputGroup.Prepend>
           <FormControl
             onChange={event => {
               this.setState({
-                description: event.target.value,
+                callback: event.target.value,
               })
             }}
+            value={this.state.callback}
             style={{minHeight: "41px"}}
             as="textarea"
             placeholder="Решение"
@@ -164,7 +184,7 @@ class AddAnswer extends React.Component{
           }}
         >
         { (this.state.textAlert.length) ?
-        <Alert dismissible variant="danger"
+        <Alert dismissible variant={this.state.variant}
             onClick={() => {
               this.setState({
                 textAlert: '',
